@@ -3,15 +3,19 @@
 #include <glad\glad.h>
 
 class Scene;
+struct GLFWwindow;
 
 class Renderer {
 public:
-	Renderer(const Scene&);
+	Renderer(GLFWwindow* glContext, const Scene&);
+	Renderer(const Renderer&) = delete;
+	Renderer& operator=(const Renderer&) = delete;
 
 	// Renders the scene
 	void renderFrame();
 
 private:
+	GLFWwindow* m_glContext;
 	const Scene& m_scene;
 	GLuint m_uniformBuffer;
 	GLuint m_uniformBlockBinding;

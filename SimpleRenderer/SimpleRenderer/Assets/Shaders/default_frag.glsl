@@ -6,9 +6,9 @@ in VertexData {
 
 out vec4 outColor;
 
-uniform sampler2D texture;
+uniform sampler2D sampler;
 
 void main(void)
 {
-    outColor = texture(texture, i.texCoord);
+    outColor = vec4(i.texCoord, 0, 1); //texture(sampler, i.texCoord);
 }

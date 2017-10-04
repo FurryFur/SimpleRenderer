@@ -9,12 +9,16 @@ int main()
 	GLFWwindow* window = GLUtils::InitOpenGL();
 
 	Scene scene;
-	Renderer renderer(scene);
+	Renderer renderer(window, scene);
 
 	GLUtils::createQuad(scene, glm::mat4{1});
 
 	while (!glfwWindowShouldClose(window)) {
 		renderer.renderFrame();
+		glfwPollEvents();
 	}
 
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	exit(EXIT_SUCCESS);
 }

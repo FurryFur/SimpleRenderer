@@ -3,7 +3,6 @@
 #include <algorithm>
 
 Scene::Scene()
-	: m_entityCount{ 0 }
 {
 }
 
@@ -92,5 +91,5 @@ const MaterialComponent & Scene::getMaterialComponent(size_t entityID) const
 
 size_t Scene::getEntityCount() const
 {
-	return m_entityCount;
+	return m_componentMasks.size();
 }

@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 
-class Vertex;
-class GLFWwindow;
+struct VertexFormat;
+struct GLFWwindow;
 class Scene;
 
 namespace GLUtils {
@@ -17,9 +17,9 @@ namespace GLUtils {
 	size_t createQuad(Scene&, glm::mat4 transform);
 	//size_t createCylinder(Scene&, glm::mat4 transform, size_t radius, size_t length);
 
-	std::vector<Vertex>& getQuadVertices();
-	std::vector<GLuint>& getQuadIndices();
+	const std::vector<VertexFormat>& getQuadVertices();
+	const std::vector<GLuint>& getQuadIndices();
 	GLuint getDefaultShader();
 
-	void bufferVertices(GLuint VAO, std::vector<Vertex> vertices, std::vector<GLuint> indices);
+	GLuint bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices);
 }

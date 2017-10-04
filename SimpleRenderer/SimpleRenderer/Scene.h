@@ -48,6 +48,4 @@ private:
 	std::vector<glm::vec3> m_angualarVelocityComponent;
 	std::vector<MeshComponent> m_meshComponents;
 	std::vector<MaterialComponent> m_materialComponents;
-
-	size_t m_entityCount;
 };

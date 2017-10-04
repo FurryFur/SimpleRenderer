@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vertex.h"
+#include "VertexFormat.h"
 
 #include <glad\glad.h>
 
@@ -8,5 +8,5 @@
 
 struct MeshComponent {
 	GLuint VAO;
-	size_t numIndices;
+	GLsizei numIndices;
 };

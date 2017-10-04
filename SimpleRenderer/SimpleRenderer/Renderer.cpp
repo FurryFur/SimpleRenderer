@@ -13,8 +13,9 @@
 using glm::mat4;
 using glm::vec3;
 
-Renderer::Renderer(const Scene& scene)
-	: m_scene{ scene }
+Renderer::Renderer(GLFWwindow* glContext, const Scene& scene)
+	: m_glContext{ glContext }
+	, m_scene{ scene }
 	, m_uniformBlockBinding{ 0 }
 	, m_kUniformModelOffset{ 0 }
 	, m_kUniformViewOffset{ sizeof(mat4) }
@@ -29,6 +30,8 @@ Renderer::Renderer(const Scene& scene)
 
 void Renderer::renderFrame()
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	// Loop through entities
 	const size_t kRenderableMask = COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
 	for (size_t entityID = 0; entityID < m_scene.getEntityCount(); ++entityID) {
@@ -48,27 +51,28 @@ void Renderer::renderFrame()
 		
 		// Get Aspect ratio (Temporary for quick camera)
 		// TODO: Place in camera class
-		GLFWwindow* context = glfwGetCurrentContext();
 		int width, height;
-		glfwGetFramebufferSize(context, &width, &height);
-		float aspectRatio = width / height;
+		glfwGetFramebufferSize(m_glContext, &width, &height);
+		float aspectRatio = static_cast<float>(width) / height;
 
-		// Temporary camera setup
+		// Model and Temporary camera setup
 		// TODO: Place in camera class
 		UniformFormat uniforms;
-		uniforms.view = glm::lookAt(vec3{ 0, 0, -1 }, vec3{ 0, 0, 0 }, vec3{ 0, 1, 0 });
-		uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 1.0f, 100.0f);
+		uniforms.model = transform;
+		uniforms.view = glm::lookAt(vec3{ 0, 0, 2 }, vec3{ 0, 0, 0 }, vec3{ 0, 1, 0 });
+		uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
 
 		// Send the model view and projection matrix to the gpu
-		uniforms.model = transform;
 		GLuint blockIndex;
 		blockIndex = glGetUniformBlockIndex(material.shader, "Uniforms");
 		glUniformBlockBinding(material.shader, blockIndex, m_uniformBlockBinding);
 		glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffer);
-		glBufferSubData(GL_UNIFORM_BUFFER, m_kUniformModelOffset, sizeof(UniformFormat), &uniforms);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformFormat), &uniforms);
 
 		// Draw object
 		glBindVertexArray(mesh.VAO);
 		glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0);
 	}
+
+	glfwSwapBuffers(m_glContext);
 }

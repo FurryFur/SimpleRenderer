@@ -150,7 +150,7 @@
     <ClInclude Include="ShaderHelper.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="UniformFormat.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexFormat.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

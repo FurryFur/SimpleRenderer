@@ -4,7 +4,7 @@
 #include "MeshComponent.h"
 #include "Scene.h"
 #include "ShaderHelper.h"
-#include "Vertex.h"
+#include "VertexFormat.h"
 
 #include <GLFW\glfw3.h>
 
@@ -83,34 +83,31 @@ size_t GLUtils::createQuad(Scene& scene, glm::mat4 _transform)
 
 	material.shader = getDefaultShader();
 
-	glGenVertexArrays(1, &mesh.VAO);
-	std::vector<Vertex>& vertices = getQuadVertices();
-	std::vector<GLuint>& indices = getQuadIndices();
-	bufferVertices(mesh.VAO, vertices, indices);
-	mesh.numIndices = indices.size();
-
-	//material.shader = getDefaultShader();
+	const std::vector<VertexFormat>& vertices = getQuadVertices();
+	const std::vector<GLuint>& indices = getQuadIndices();
+	mesh.VAO = bufferVertices(vertices, indices);
+	mesh.numIndices = static_cast<GLsizei>(indices.size());
 
 	return entityID;
 }
 
-std::vector<Vertex>& GLUtils::getQuadVertices()
+const std::vector<VertexFormat>& GLUtils::getQuadVertices()
 {
-	static std::vector<Vertex> vertices = {
-		{ { -0.5,  0.5f, 0 }, { 0, 0, 1 }, { 0, 1 } }, // Top left
-		{ {  0.5,  0.5f, 0 }, { 0, 0, 1 }, { 1, 1 } }, // Top right
-		{ {  0.5, -0.5f, 0 }, { 0, 0, 1 }, { 1, 0 } }, // Bottom right
-		{ { -0.5, -0.5f, 0 }, { 0, 0, 1 }, { 0, 0 } }  // Bottom left
+	static const std::vector<VertexFormat> vertices = {
+		{ { -1,  1, 0 }, { 0, 0, 1 }, { 0, 1 } }, // Top left
+		{ {  1,  1, 0 }, { 0, 0, 1 }, { 1, 1 } }, // Top right
+		{ {  1, -1, 0 }, { 0, 0, 1 }, { 1, 0 } }, // Bottom right
+		{ { -1, -1, 0 }, { 0, 0, 1 }, { 0, 0 } }  // Bottom left
 	};
 
 	return vertices;
 }
 
-std::vector<GLuint>& GLUtils::getQuadIndices()
+const std::vector<GLuint>& GLUtils::getQuadIndices()
 {
-	static std::vector<GLuint> indices = {
-		0, 2, 3,
-		0, 1, 2
+	static const std::vector<GLuint> indices = {
+		0, 1, 2,
+		0, 2, 3
 	};
 
 	return indices;
@@ -127,22 +124,29 @@ GLuint GLUtils::getDefaultShader()
 	return shader;
 }
 
-void GLUtils::bufferVertices(GLuint VAO, std::vector<Vertex> vertices, std::vector<GLuint> indices)
+GLuint GLUtils::bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices)
 {
+	GLuint VAO;
+	GLuint buffers[2];
+	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &buffers[0]);
+	glGenBuffers(1, &buffers[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexFormat) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), GL_STATIC_DRAW);
 	
-	GLuint colorLoc = 0;
+	GLuint positionLoc = 0;
 	GLuint normalLoc = 1;
 	GLuint texCoordLoc = 2;
-	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(0));
-	glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), BUFFER_OFFSET(3));
-	glVertexAttribPointer(texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), BUFFER_OFFSET(6));
+	glVertexAttribPointer(positionLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), BUFFER_OFFSET(0));
+	glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), BUFFER_OFFSET(3));
+	glVertexAttribPointer(texCoordLoc, 2, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), BUFFER_OFFSET(6));
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(positionLoc);
+	glEnableVertexAttribArray(normalLoc);
+	glEnableVertexAttribArray(texCoordLoc);
+
+	return VAO;
 }
