@@ -14,8 +14,9 @@ namespace GLUtils {
 	GLFWwindow* InitOpenGL();
 	//GLuint loadTexture(const std::string& filename);
 
-	size_t createQuad(Scene&, glm::mat4 transform);
+	size_t createQuad(Scene&, const glm::mat4& transform);
 	//size_t createCylinder(Scene&, glm::mat4 transform, size_t radius, size_t length);
+	size_t createCamera(Scene&, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up);
 
 	const std::vector<VertexFormat>& getQuadVertices();
 	const std::vector<GLuint>& getQuadIndices();

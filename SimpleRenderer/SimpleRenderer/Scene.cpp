@@ -2,10 +2,6 @@
 
 #include <algorithm>
 
-Scene::Scene()
-{
-}
-
 size_t Scene::createEntity()
 {
 	// Reuse destroyed entityID memory
@@ -14,12 +10,13 @@ size_t Scene::createEntity()
 		return *freeMem;
 
 	// Allocate memory for new entityID
-	m_componentMasks.push_back(COMPONENT_NONE);
-	m_transformComponents.push_back({});
-	m_velocityComponents.push_back({});
-	m_angualarVelocityComponent.push_back({});
-	m_meshComponents.push_back({});
-	m_materialComponents.push_back({});
+	m_componentMasks.emplace_back(COMPONENT_NONE);
+	m_transformComponents.emplace_back();
+	m_velocityComponents.emplace_back();
+	m_angualarVelocityComponent.emplace_back();
+	m_meshComponents.emplace_back();
+	m_materialComponents.emplace_back();
+	m_cameraComponents.emplace_back();
 
 	return m_componentMasks.size() - 1;
 }
@@ -44,7 +41,7 @@ glm::mat4& Scene::getTransformComponent(size_t entityID)
 	return m_transformComponents.at(entityID);
 }
 
-const glm::mat4 & Scene::getTransformComponent(size_t entityID) const
+const glm::mat4& Scene::getTransformComponent(size_t entityID) const
 {
 	return m_transformComponents.at(entityID);
 }
@@ -54,7 +51,7 @@ glm::vec3 & Scene::getVelocityComponent(size_t entityID)
 	return m_velocityComponents.at(entityID);
 }
 
-const glm::vec3 & Scene::getVelocityComponent(size_t entityID) const
+const glm::vec3& Scene::getVelocityComponent(size_t entityID) const
 {
 	return m_velocityComponents.at(entityID);
 }
@@ -64,7 +61,7 @@ glm::vec3 & Scene::getAngularVelocityComponent(size_t entityID)
 	return m_angualarVelocityComponent.at(entityID);
 }
 
-const glm::vec3 & Scene::getAngularVelocityComponent(size_t entityID) const
+const glm::vec3& Scene::getAngularVelocityComponent(size_t entityID) const
 {
 	return m_angualarVelocityComponent.at(entityID);
 }
@@ -87,6 +84,16 @@ MaterialComponent & Scene::getMaterialComponent(size_t entityID)
 const MaterialComponent & Scene::getMaterialComponent(size_t entityID) const
 {
 	return m_materialComponents.at(entityID);
+}
+
+CameraComponent & Scene::getCameraComponent(size_t entityID)
+{
+	return m_cameraComponents.at(entityID);
+}
+
+const CameraComponent & Scene::getCameraComponent(size_t entityID) const
+{
+	return m_cameraComponents.at(entityID);
 }
 
 size_t Scene::getEntityCount() const

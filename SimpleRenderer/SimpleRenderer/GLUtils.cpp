@@ -68,7 +68,7 @@ GLFWwindow* GLUtils::InitOpenGL()
 	return glContext;
 }
 
-size_t GLUtils::createQuad(Scene& scene, glm::mat4 _transform)
+size_t GLUtils::createQuad(Scene& scene, const glm::mat4& _transform)
 {
 	size_t entityID = scene.createEntity();
 	size_t& componentMask = scene.getComponentMask(entityID);
@@ -91,13 +91,27 @@ size_t GLUtils::createQuad(Scene& scene, glm::mat4 _transform)
 	return entityID;
 }
 
+size_t GLUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up)
+{
+	size_t entityID = scene.createEntity();
+
+	scene.getComponentMask(entityID) = COMPONENT_CAMERA;
+	CameraComponent& camera = scene.getCameraComponent(entityID);
+
+	camera.cameraPos = pos;
+	camera.cameraFront = glm::normalize(center - pos);
+	camera.cameraUp = glm::vec3{ 0, 1, 0 };
+
+	return entityID;
+}
+
 const std::vector<VertexFormat>& GLUtils::getQuadVertices()
 {
 	static const std::vector<VertexFormat> vertices = {
-		{ { -1,  1, 0 }, { 0, 0, 1 }, { 0, 1 } }, // Top left
-		{ {  1,  1, 0 }, { 0, 0, 1 }, { 1, 1 } }, // Top right
-		{ {  1, -1, 0 }, { 0, 0, 1 }, { 1, 0 } }, // Bottom right
-		{ { -1, -1, 0 }, { 0, 0, 1 }, { 0, 0 } }  // Bottom left
+		{ { -1,  1, 0 }, { -1, 1, 1 }, { 0, 1 } }, // Top left
+		{ {  1,  1, 0 }, { 1, 1, 1 }, { 1, 1 } }, // Top right
+		{ {  1, -1, 0 }, { 1, -1, 1 }, { 1, 0 } }, // Bottom right
+		{ { -1, -1, 0 }, { -1, -1, 1 }, { 0, 0 } }  // Bottom left
 	};
 
 	return vertices;
@@ -115,11 +129,16 @@ const std::vector<GLuint>& GLUtils::getQuadIndices()
 
 GLuint GLUtils::getDefaultShader()
 {
-	GLuint shader;
-	compileAndLinkShaders(
-		"Assets/Shaders/default_vert.glsl",
-		"Assets/Shaders/default_frag.glsl",
-		shader);
+	static GLuint shader;
+	static bool shaderBuilt = false;
+
+	if (!shaderBuilt) {
+		compileAndLinkShaders(
+			"Assets/Shaders/default_vert.glsl",
+			"Assets/Shaders/default_frag.glsl",
+			shader);
+		shaderBuilt = true;
+	}
 
 	return shader;
 }

@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include "CameraComponent.h"
 #include "GLUtils.h"
 #include "MaterialComponent.h"
 #include "MeshComponent.h"
@@ -44,6 +45,9 @@ void Renderer::renderFrame()
 		const MeshComponent& mesh = m_scene.getMeshComponent(entityID);
 		const mat4& transform = m_scene.getTransformComponent(entityID);
 
+		// TODO: Add check that camera is a valid camera entity, throw error otherwise
+		const CameraComponent& camera = m_scene.getCameraComponent(m_cameraEntity);
+
 		// Tell the gpu what material to use
 		glUseProgram(material.shader);
 		//glActiveTexture(GL_TEXTURE0);
@@ -59,7 +63,7 @@ void Renderer::renderFrame()
 		// TODO: Place in camera class
 		UniformFormat uniforms;
 		uniforms.model = transform;
-		uniforms.view = glm::lookAt(vec3{ 0, 0, 2 }, vec3{ 0, 0, 0 }, vec3{ 0, 1, 0 });
+		uniforms.view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
 		uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
 
 		// Send the model view and projection matrix to the gpu
@@ -75,4 +79,10 @@ void Renderer::renderFrame()
 	}
 
 	glfwSwapBuffers(m_glContext);
+}
+
+void Renderer::setCamera(size_t entityID)
+{
+	// TODO: Throw error if entity does not have a camera component
+	m_cameraEntity = entityID;
 }

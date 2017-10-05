@@ -2,6 +2,7 @@
 
 #include "MeshComponent.h"
 #include "MaterialComponent.h"
+#include "CameraComponent.h"
 
 #include <glm\glm.hpp>
 
@@ -13,13 +14,12 @@ enum ComponentMask {
 	COMPONENT_VELOCITY = 1 << 1,
 	COMPONENT_ANGULAR_VELOCITY = 1 << 2,
 	COMPONENT_MESH = 1 << 3,
-	COMPONENT_MATERIAL = 1 << 4
+	COMPONENT_MATERIAL = 1 << 4,
+	COMPONENT_CAMERA = 1 << 5
 };
 
 class Scene {
 public:
-	Scene();
-
 	// Creates a new entity in the scene and returns its ID
 	size_t createEntity();
 
@@ -38,6 +38,8 @@ public:
 	const MeshComponent& getMeshComponent(size_t entityID) const;
 	MaterialComponent& getMaterialComponent(size_t entityID);
 	const MaterialComponent& getMaterialComponent(size_t entityID) const;
+	CameraComponent& getCameraComponent(size_t entityID);
+	const CameraComponent& getCameraComponent(size_t entityID) const;
 	
 	size_t getEntityCount() const;
 
@@ -48,4 +50,5 @@ private:
 	std::vector<glm::vec3> m_angualarVelocityComponent;
 	std::vector<MeshComponent> m_meshComponents;
 	std::vector<MaterialComponent> m_materialComponents;
+	std::vector<CameraComponent> m_cameraComponents;
 };

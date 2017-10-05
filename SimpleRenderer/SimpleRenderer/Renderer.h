@@ -13,6 +13,7 @@ public:
 
 	// Renders the scene
 	void renderFrame();
+	void setCamera(size_t entityID);
 
 private:
 	GLFWwindow* m_glContext;
@@ -22,4 +23,5 @@ private:
 	const GLuint m_kUniformModelOffset;
 	const GLuint m_kUniformViewOffset;
 	const GLuint m_kUniformProjectionOffset;
+	size_t m_cameraEntity;
 };

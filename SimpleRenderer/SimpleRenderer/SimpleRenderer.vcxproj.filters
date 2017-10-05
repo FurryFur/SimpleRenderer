@@ -68,5 +68,8 @@
     <ClInclude Include="VertexFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
