@@ -13,7 +13,6 @@ class InputSystem;
 
 namespace GLUtils {
 	GLFWwindow* initOpenGL();
-	//GLuint loadTexture(const std::string& filename);
 
 	// Creates a new entity in the scene and returns its ID
 	size_t createEntity(Scene& scene);
@@ -36,6 +35,8 @@ namespace GLUtils {
 	GLuint getDefaultShader();
 
 	GLuint bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices);
+
+	GLuint loadTexture(const std::string& filename);
 
 	// Limits a vector to the specified magnitude
 	template <typename VecT>

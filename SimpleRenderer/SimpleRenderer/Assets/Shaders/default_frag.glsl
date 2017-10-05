@@ -16,6 +16,7 @@ void main(void)
 {
     vec3 normal = normalize(i.normal.xyz);
     float lightIntensity = dot(normalize(lightDir), normal);
+    outColor = texture(sampler, i.texCoord);
 
-    outColor = vec4(lightIntensity * lightCol * vec3(0.5, 0.5, 0.5), 1); //texture(sampler, i.texCoord);
+    outColor = lightIntensity * vec4(lightCol, 1) * outColor; //texture(sampler, i.texCoord);
 }

@@ -55,23 +55,22 @@ void RenderSystem::update(size_t entityID)
 
 	// Tell the gpu what material to use
 	glUseProgram(material.shader);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, material.texture);
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(glGetUniformLocation(material.shader, "sampler"), 0);
+	glBindTexture(GL_TEXTURE_2D, material.texture);
 		
-	// Get Aspect ratio (Temporary for quick camera)
-	// TODO: Place in camera class
+	// Get Aspect ratio
 	int width, height;
 	glfwGetFramebufferSize(m_glContext, &width, &height);
 	float aspectRatio = static_cast<float>(width) / height;
 
-	// Model and Temporary camera setup
-	// TODO: Place in camera class
+	// Get model, view and projection matrices
 	UniformFormat uniforms;
 	uniforms.model = transform;
 	uniforms.view = glm::inverse(cameraTransform);
 	uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
 
-	// Send the model view and projection matrix to the gpu
+	// Send the model view and projection matrices to the gpu
 	GLuint blockIndex;
 	blockIndex = glGetUniformBlockIndex(material.shader, "Uniforms");
 	glUniformBlockBinding(material.shader, blockIndex, m_uniformBlockBinding);

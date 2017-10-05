@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "ShaderHelper.h"
 #include "VertexFormat.h"
+#include "stb_image.h"
 
 #include <GLFW\glfw3.h>
 #include <glm\gtc\matrix_transform.hpp>
@@ -114,6 +115,7 @@ size_t GLUtils::createQuad(Scene& scene, const glm::mat4& transform)
 	MaterialComponent& material = scene.materialComponents.at(entityID);
 
 	material.shader = getDefaultShader();
+	material.texture = loadTexture("Assets/Textures/PlaneTexture.jpg");
 
 	const std::vector<VertexFormat>& vertices = getQuadVertices();
 	const std::vector<GLuint>& indices = getQuadIndices();
@@ -204,4 +206,22 @@ GLuint GLUtils::bufferVertices(const std::vector<VertexFormat>& vertices, const 
 	glEnableVertexAttribArray(texCoordLoc);
 
 	return VAO;
+}
+
+GLuint GLUtils::loadTexture(const std::string& filename)
+{
+	int width, height, nrChannels;
+	unsigned char* textureData = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// TODO: Set magnification / minification filters
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(textureData);
+
+	return texture;
 }
