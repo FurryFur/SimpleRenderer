@@ -2,7 +2,7 @@
 
 #include <glad\glad.h>
 
-class Scene;
+struct Scene;
 struct GLFWwindow;
 
 class RenderSystem {

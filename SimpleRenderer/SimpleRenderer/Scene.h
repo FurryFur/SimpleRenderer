@@ -1,8 +1,9 @@
 #pragma once
 
+#include "InputComponent.h"
 #include "MeshComponent.h"
 #include "MaterialComponent.h"
-#include "CameraComponent.h"
+#include "MovementComponent.h"
 
 #include <glm\glm.hpp>
 
@@ -15,40 +16,18 @@ enum ComponentMask {
 	COMPONENT_ANGULAR_VELOCITY = 1 << 2,
 	COMPONENT_MESH = 1 << 3,
 	COMPONENT_MATERIAL = 1 << 4,
-	COMPONENT_CAMERA = 1 << 5
+	COMPONENT_CAMERA = 1 << 5,
+	COMPONENT_MOVEMENT = 1 << 6,
+	COMPONENT_INPUT = 1 << 7
 };
 
-class Scene {
-public:
-	// Creates a new entity in the scene and returns its ID
-	size_t createEntity();
-
-	// Destroys an entity
-	void destroyEntity(size_t entityID);
-
-	size_t& getComponentMask(size_t entityID);
-	size_t getComponentMask(size_t entityID) const;
-	glm::mat4& getTransformComponent(size_t entityID);
-	const glm::mat4& getTransformComponent(size_t entityID) const;
-	glm::vec3& getVelocityComponent(size_t entityID);
-	const glm::vec3& getVelocityComponent(size_t entityID) const;
-	glm::vec3& getAngularVelocityComponent(size_t entityID);
-	const glm::vec3& getAngularVelocityComponent(size_t entityID) const;
-	MeshComponent& getMeshComponent(size_t entityID);
-	const MeshComponent& getMeshComponent(size_t entityID) const;
-	MaterialComponent& getMaterialComponent(size_t entityID);
-	const MaterialComponent& getMaterialComponent(size_t entityID) const;
-	CameraComponent& getCameraComponent(size_t entityID);
-	const CameraComponent& getCameraComponent(size_t entityID) const;
-	
-	size_t getEntityCount() const;
-
-private:
-	std::vector<size_t> m_componentMasks;
-	std::vector<glm::mat4> m_transformComponents;
-	std::vector<glm::vec3> m_velocityComponents;
-	std::vector<glm::vec3> m_angualarVelocityComponent;
-	std::vector<MeshComponent> m_meshComponents;
-	std::vector<MaterialComponent> m_materialComponents;
-	std::vector<CameraComponent> m_cameraComponents;
+struct Scene {
+	std::vector<size_t> componentMasks;
+	std::vector<glm::mat4> transformComponents;
+	std::vector<glm::vec3> velocityComponents;
+	std::vector<glm::vec3> angualarVelocityComponent;
+	std::vector<MeshComponent> meshComponents;
+	std::vector<MaterialComponent> materialComponents;
+	std::vector<MovementComponent> movementComponents;
+	std::vector<InputComponent> inputComponents;
 };

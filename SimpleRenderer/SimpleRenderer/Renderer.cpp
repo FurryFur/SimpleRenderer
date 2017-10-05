@@ -1,6 +1,5 @@
 #include "RenderSystem.h"
 
-#include "CameraComponent.h"
 #include "GLUtils.h"
 #include "MaterialComponent.h"
 #include "MeshComponent.h"
@@ -43,16 +42,16 @@ void RenderSystem::update(size_t entityID)
 {
 	// Filter renderable entities
 	const size_t kRenderableMask = COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
-	if (!(m_scene.getComponentMask(entityID) & kRenderableMask))
+	if ((m_scene.componentMasks.at(entityID) & kRenderableMask) != kRenderableMask)
 		return;
 
 	// Get rendering components of entity
-	const MaterialComponent& material = m_scene.getMaterialComponent(entityID);
-	const MeshComponent& mesh = m_scene.getMeshComponent(entityID);
-	const mat4& transform = m_scene.getTransformComponent(entityID);
+	const MaterialComponent& material = m_scene.materialComponents[entityID];
+	const MeshComponent& mesh = m_scene.meshComponents.at(entityID);
+	const mat4& transform = m_scene.transformComponents.at(entityID);
 
 	// TODO: Add check that camera is a valid camera entity, throw error otherwise
-	const CameraComponent& camera = m_scene.getCameraComponent(m_cameraEntity);
+	const mat4& cameraTransform = m_scene.transformComponents.at(m_cameraEntity);
 
 	// Tell the gpu what material to use
 	glUseProgram(material.shader);
@@ -69,7 +68,7 @@ void RenderSystem::update(size_t entityID)
 	// TODO: Place in camera class
 	UniformFormat uniforms;
 	uniforms.model = transform;
-	uniforms.view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
+	uniforms.view = glm::inverse(cameraTransform);
 	uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
 
 	// Send the model view and projection matrix to the gpu
