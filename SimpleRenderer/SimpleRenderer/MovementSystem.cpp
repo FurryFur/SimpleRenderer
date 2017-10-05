@@ -2,6 +2,7 @@
 
 #include "MovementComponent.h"
 #include "GLUtils.h"
+#include "GLMUtils.h"
 #include "Scene.h"
 
 #include <glm\glm.hpp>
@@ -34,7 +35,7 @@ void MovementSystem::update(size_t entityID)
 	glm::vec3 cameraUp = glm::vec3{ 0, 1, 0 };
 	
 	// Displacement
-	glm::vec3 moveAxis = GLUtils::limitVec(input.moveAxis, 1);
+	glm::vec3 moveAxis = GLMUtils::limitVec(input.moveAxis, 1);
 	moveAxis = transform * glm::vec4{ moveAxis, 0 }; // Convert to orientation space
 	cameraPos += moveSpeed * moveAxis;
 

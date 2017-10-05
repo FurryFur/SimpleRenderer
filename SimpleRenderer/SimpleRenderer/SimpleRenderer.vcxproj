@@ -139,10 +139,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SceneUtils.cpp" />
     <ClCompile Include="ShaderHelper.cpp" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GLMUtils.h" />
     <ClInclude Include="GLUtils.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
@@ -152,6 +154,7 @@
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneUtils.h" />
     <ClInclude Include="ShaderHelper.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="UniformFormat.h" />

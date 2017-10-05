@@ -42,6 +42,9 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SceneUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeshComponent.h">
@@ -81,6 +84,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="InputSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLMUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
