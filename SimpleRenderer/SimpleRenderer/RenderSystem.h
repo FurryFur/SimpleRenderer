@@ -5,14 +5,16 @@
 class Scene;
 struct GLFWwindow;
 
-class Renderer {
+class RenderSystem {
 public:
-	Renderer(GLFWwindow* glContext, const Scene&);
-	Renderer(const Renderer&) = delete;
-	Renderer& operator=(const Renderer&) = delete;
+	RenderSystem(GLFWwindow* glContext, const Scene&);
+	RenderSystem(const RenderSystem&) = delete;
+	RenderSystem& operator=(const RenderSystem&) = delete;
 
 	// Renders the scene
-	void renderFrame();
+	void beginRender();
+	void endRender();
+	void update(size_t entityID);
 	void setCamera(size_t entityID);
 
 private:

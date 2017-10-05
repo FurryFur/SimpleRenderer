@@ -146,7 +146,7 @@
     <ClInclude Include="GLUtils.h" />
     <ClInclude Include="MaterialComponent.h" />
     <ClInclude Include="MeshComponent.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderHelper.h" />
     <ClInclude Include="stb_image.h" />
