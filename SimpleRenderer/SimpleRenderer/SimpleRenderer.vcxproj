@@ -164,6 +164,13 @@
     <ClInclude Include="UniformFormat.h" />
     <ClInclude Include="VertexFormat.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\default_frag.glsl" />
+    <None Include="Assets\Shaders\default_vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Textures\PlaneTexture.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

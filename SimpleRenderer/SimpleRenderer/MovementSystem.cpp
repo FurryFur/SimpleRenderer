@@ -59,5 +59,5 @@ void MovementSystem::update(size_t entityID)
 
 	transform[3] = {0, 0, 0, 1}; // Remove displacement temporarily
 	transform = glm::mat4{ rollMat * azimuthMat * elevationMat } * transform; // Rotation without displacement
-	transform = glm::translate(pos) * transform; // Add displacement back in
+	transform[3] = glm::vec4{ pos, 1 }; // Add displacement back in
 }

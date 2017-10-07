@@ -10,8 +10,8 @@
 
 #include <cmath>
 
-const size_t g_kThetaSegments = 8; // Number of segments from top to bottom of sphere
-const size_t g_kPhiSegments = 8; // Number of segments going around the sphere
+const size_t g_kThetaSegments = 16; // Number of segments from top to bottom of sphere
+const size_t g_kPhiSegments = 16; // Number of segments going around the sphere
 const float g_kDThetaSphere = static_cast<float>(M_PI / g_kThetaSegments);
 const float g_kDPhiSphere = static_cast<float>(2 * M_PI / g_kPhiSegments);
 
@@ -60,10 +60,7 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
 
-	const std::vector<VertexFormat>& vertices = getQuadVertices();
-	const std::vector<GLuint>& indices = getQuadIndices();
-	mesh.VAO = GLUtils::bufferVertices(vertices, indices);
-	mesh.numIndices = static_cast<GLsizei>(indices.size());
+	mesh = getQuadMesh();
 
 	return entityID;
 }
@@ -86,10 +83,7 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
 
-	const std::vector<VertexFormat>& vertices = getSphereVertices();
-	const std::vector<GLuint>& indices = getSphereIndices();
-	mesh.VAO = GLUtils::bufferVertices(vertices, indices);
-	mesh.numIndices = static_cast<GLsizei>(indices.size());
+	mesh = getSphereMesh();
 
 	input = {};
 	input.leftBtnMap = GLFW_KEY_KP_4;
@@ -145,16 +139,18 @@ const std::vector<VertexFormat>& SceneUtils::getSphereVertices()
 {
 	static std::vector<VertexFormat> s_vertices;
 
-	// Theta is angle from top of sphere
-	for (size_t i = 0; i < g_kThetaSegments + 1; ++i) {
-		float theta = i * g_kDThetaSphere;
-		for (size_t j = 0; j < g_kPhiSegments + 1; ++j) {
-			float phi = j * g_kDPhiSphere;
-			glm::vec3 position = { -sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi) };
-			s_vertices.emplace_back(VertexFormat{
-				position,                   // Position
-				position,                   // Normal (same as position for a unit sphere)
-				glm::vec2{ theta, phi } }); // Texture Coordinate
+	if (s_vertices.size() == 0) {
+		// Theta is angle from top of sphere
+		for (size_t i = 0; i < g_kThetaSegments + 1; ++i) {
+			float theta = i * g_kDThetaSphere;
+			for (size_t j = 0; j < g_kPhiSegments + 1; ++j) {
+				float phi = j * g_kDPhiSphere;
+				glm::vec3 position = { -sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi) };
+				s_vertices.emplace_back(VertexFormat{
+					position,                   // Position
+					position,                   // Normal (same as position for a unit sphere)
+					glm::vec2{ phi, -theta } }); // Texture Coordinate
+			}
 		}
 	}
 
@@ -163,23 +159,25 @@ const std::vector<VertexFormat>& SceneUtils::getSphereVertices()
 
 const std::vector<GLuint>& SceneUtils::getSphereIndices()
 {
-	const size_t numVertices = (g_kThetaSegments + 1) * (g_kPhiSegments + 1);
+	static const size_t numVertices = (g_kThetaSegments + 1) * (g_kPhiSegments + 1);
 	static std::vector<GLuint> s_indices;
 
-	for (GLuint i = 0; i < g_kThetaSegments + 1; ++i) {
-		for (GLuint j = 0; j < g_kPhiSegments + 1; ++j) {
-			GLuint vertIdxTopLeft = i * g_kPhiSegments + j;
-			GLuint vertIdxTopRight = vertIdxTopLeft + 1;
-			GLuint vertIdxBottomLeft = (i + 1) * g_kPhiSegments + j;
-			GLuint vertIdxBottomRight = vertIdxBottomLeft + 1;
-			if ((   vertIdxTopLeft < numVertices) && (  vertIdxTopRight < numVertices )
-			 && (vertIdxBottomLeft < numVertices) && (vertIdxBottomRight < numVertices)) {
-				s_indices.push_back(vertIdxTopLeft);
-				s_indices.push_back(vertIdxTopRight);
-				s_indices.push_back(vertIdxBottomRight);
-				s_indices.push_back(vertIdxTopLeft);
-				s_indices.push_back(vertIdxBottomRight);
-				s_indices.push_back(vertIdxBottomLeft);
+	if (s_indices.size() == 0) {
+		for (GLuint i = 0; i < g_kThetaSegments + 1; ++i) {
+			for (GLuint j = 0; j < g_kPhiSegments + 1; ++j) {
+				GLuint vertIdxTopLeft = i * g_kPhiSegments + j;
+				GLuint vertIdxTopRight = vertIdxTopLeft + 1;
+				GLuint vertIdxBottomLeft = (i + 1) * g_kPhiSegments + j;
+				GLuint vertIdxBottomRight = vertIdxBottomLeft + 1;
+				if ((vertIdxTopLeft < numVertices) && (vertIdxTopRight < numVertices)
+					&& (vertIdxBottomLeft < numVertices) && (vertIdxBottomRight < numVertices)) {
+					s_indices.push_back(vertIdxTopLeft);
+					s_indices.push_back(vertIdxTopRight);
+					s_indices.push_back(vertIdxBottomRight);
+					s_indices.push_back(vertIdxTopLeft);
+					s_indices.push_back(vertIdxBottomRight);
+					s_indices.push_back(vertIdxBottomLeft);
+				}
 			}
 		}
 	}
@@ -207,5 +205,29 @@ const std::vector<GLuint>& SceneUtils::getQuadIndices()
 	};
 
 	return s_indices;
+}
+
+MeshComponent SceneUtils::getQuadMesh()
+{
+	static const std::vector<VertexFormat>& vertices = getQuadVertices();
+	static const std::vector<GLuint>& indices = getQuadIndices();
+	static const MeshComponent mesh{
+		GLUtils::bufferVertices(vertices, indices),
+		static_cast<GLsizei>(indices.size())
+	};
+
+	return mesh;
+}
+
+MeshComponent SceneUtils::getSphereMesh()
+{
+	static const std::vector<VertexFormat>& vertices = getSphereVertices();
+	static const std::vector<GLuint>& indices = getSphereIndices();
+	static const MeshComponent mesh{
+		GLUtils::bufferVertices(vertices, indices),
+		static_cast<GLsizei>(indices.size())
+	};
+
+	return mesh;
 }
 

@@ -7,6 +7,7 @@
 
 struct Scene;
 struct VertexFormat;
+struct MeshComponent;
 
 namespace SceneUtils {
 	// Creates a new entity in the scene and returns its ID
@@ -35,4 +36,6 @@ namespace SceneUtils {
 	const std::vector<GLuint>& getQuadIndices();
 	const std::vector<VertexFormat>& getSphereVertices();
 	const std::vector<GLuint>& getSphereIndices();
+	MeshComponent getQuadMesh();
+	MeshComponent getSphereMesh();
 }
