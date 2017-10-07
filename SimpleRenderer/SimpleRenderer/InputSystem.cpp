@@ -1,9 +1,7 @@
 #include "InputSystem.h"
 
-#include "InputComponent.h"
 #include "Scene.h"
 
-#include <glm\glm.hpp>
 #include <GLFW\glfw3.h>
 
 InputSystem::InputSystem(GLFWwindow* window, Scene& scene)
@@ -12,33 +10,61 @@ InputSystem::InputSystem(GLFWwindow* window, Scene& scene)
 {
 	// Register input system as a listener for keyboard events
 	glfwSetWindowUserPointer(window, this);
-	auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
-		inputSystem->keyCallback(key, scancode, action, mods);
+	auto keyFunc = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		//InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
+		//inputSystem->keyCallback(key, scancode, action, mods);
 
 		// Close window on exit
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	};
-	glfwSetKeyCallback(window, func);
+	glfwSetKeyCallback(window, keyFunc);
+
+	// Register input system as a listener for mouse move events
+	//auto mouseFunc = [](GLFWwindow* window, double xpos, double ypos) {
+	//	InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
+	//	inputSystem->mouseMoveCallback(glm::vec2{ static_cast<float>(xpos), static_cast<float>(ypos) });
+	//};
+	//glfwSetCursorPosCallback(window, mouseFunc);
 }
 
-void InputSystem::keyCallback(int key, int scancode, int action, int mods)
+void InputSystem::beginFrame()
 {
-	// TODO: These mappings should not be hard coded here. Should instead be mapped in input component on entity creation
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_leftMoveBtnDown = (action == GLFW_PRESS);
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_rightMoveBtnDown = (action == GLFW_PRESS);
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_forwardMoveBtnDown = (action == GLFW_PRESS);
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_backwardMoveBtnDown = (action == GLFW_PRESS);
-	if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_downMoveBtnDown = (action == GLFW_PRESS);
-	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_RELEASE))
-		m_upMoveBtnDown = (action == GLFW_PRESS);
+	static glm::dvec2 lastMousePos;
+
+	// Set previous mouse pos to current mouse pos on first run
+	static bool firstRun = true;
+	if (firstRun) {
+		glfwGetCursorPos(m_window, &lastMousePos.x, &lastMousePos.y);
+		firstRun = false;
+	}
+
+	// Update input from mouse
+	glm::dvec2 mousePos;
+	glfwGetCursorPos(m_window, &mousePos.x, &mousePos.y);
+
+	// Update mouse delta
+	m_mouseDelta = mousePos - lastMousePos;
+
+	lastMousePos = mousePos;
 }
+
+//void InputSystem::keyCallback(int key, int scancode, int action, int mods)
+//{
+//	// TODO: These mappings should not be hard coded here. Should instead be mapped in input component on entity creation
+//	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_leftBtnDown = (action == GLFW_PRESS);
+//	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_rightBtnDown = (action == GLFW_PRESS);
+//	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_forwardBtnDown = (action == GLFW_PRESS);
+//	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_backwardBtnDown = (action == GLFW_PRESS);
+//	if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_downBtnDown = (action == GLFW_PRESS);
+//	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_RELEASE))
+//		m_upBtnDown = (action == GLFW_PRESS);
+//}
 
 void InputSystem::update(size_t entityID)
 {
@@ -49,31 +75,19 @@ void InputSystem::update(size_t entityID)
 
 	// Update input from buttons
 	InputComponent& input = m_scene.inputComponents.at(entityID);
-	input.moveAxis = glm::vec3{ 0 };
-	if (m_leftMoveBtnDown)
-		input.moveAxis.x -= 1;
-	if (m_rightMoveBtnDown)
-		input.moveAxis.x += 1;
-	if (m_forwardMoveBtnDown)
-		input.moveAxis.z -= 1;
-	if (m_backwardMoveBtnDown)
-		input.moveAxis.z += 1;
-	if (m_downMoveBtnDown)
-		input.moveAxis.y -= 1;
-	if (m_upMoveBtnDown)
-		input.moveAxis.y += 1;
+	input.axis = glm::vec3{ 0 };
+	if (input.leftBtnMap && glfwGetKey(m_window, input.leftBtnMap) == GLFW_PRESS)
+		input.axis.x -= 1;
+	if (input.rightBtnMap && glfwGetKey(m_window, input.rightBtnMap) == GLFW_PRESS)
+		input.axis.x += 1;
+	if (input.forwardBtnMap && glfwGetKey(m_window, input.forwardBtnMap) == GLFW_PRESS)
+		input.axis.z -= 1;
+	if (input.backwardBtnMap && glfwGetKey(m_window, input.backwardBtnMap) == GLFW_PRESS)
+		input.axis.z += 1;
+	if (input.downBtnMap && glfwGetKey(m_window, input.downBtnMap) == GLFW_PRESS)
+		input.axis.y -= 1;
+	if (input.upBtnMap && glfwGetKey(m_window, input.upBtnMap) == GLFW_PRESS)
+		input.axis.y += 1;
 
-	// Update input from mouse
-	static glm::dvec2 lastCursorPos;
-	static bool firstRun = true;
-	if (firstRun) {
-		glfwGetCursorPos(m_window, &lastCursorPos.x, &lastCursorPos.y);
-		firstRun = false;
-	}
-	glm::dvec2 cursorPos;
-	glfwGetCursorPos(m_window, &cursorPos.x, &cursorPos.y);
-
-	input.lookDelta = cursorPos - lastCursorPos;
-
-	lastCursorPos = cursorPos;
+	input.mouseDelta = m_mouseDelta;
 }

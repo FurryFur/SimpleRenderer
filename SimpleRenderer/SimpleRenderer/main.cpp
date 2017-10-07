@@ -16,12 +16,14 @@ int main()
 	MovementSystem movementSystem(scene);
 	InputSystem inputSystem(window, scene);
 
-	SceneUtils::createQuad(scene, glm::mat4{1});
+	SceneUtils::createQuad(scene, glm::mat4{ 1 });
+	SceneUtils::createSphere(scene, glm::mat4{ 1 });
 
 	size_t cameraEntity = SceneUtils::createCamera(scene, { 0, 0, 2 }, { 0, 0, 0 }, { 0, 1, 0 });
 	renderSystem.setCamera(cameraEntity);
 
 	while (!glfwWindowShouldClose(window)) {
+		inputSystem.beginFrame();
 		renderSystem.beginRender();
 
 		for (size_t entityID = 0; entityID < SceneUtils::getEntityCount(scene); ++entityID) {

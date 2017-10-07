@@ -28,20 +28,20 @@ void MovementSystem::update(size_t entityID)
 	float moveSpeed = movementVars.moveSpeed;
 	float lookSensitivity = movementVars.lookSensitivity;
 
-	float deltaYaw = -lookSensitivity * input.lookDelta.x;
-	float deltaPitch = -lookSensitivity * input.lookDelta.y;
-	glm::vec3 cameraFront = transform * glm::vec4{ 0, 0, -1, 0 }; // Convert to orientation space
-	glm::vec3 cameraPos = transform[3];
-	glm::vec3 cameraUp = glm::vec3{ 0, 1, 0 };
+	float deltaYaw = -lookSensitivity * input.mouseDelta.x;
+	float deltaPitch = -lookSensitivity * input.mouseDelta.y;
+	glm::vec3 front = transform * glm::vec4{ 0, 0, -1, 0 }; // Convert to orientation space
+	glm::vec3 pos = transform[3];
+	glm::vec3 up = glm::vec3{ 0, 1, 0 };
 	
 	// Displacement
-	glm::vec3 moveAxis = GLMUtils::limitVec(input.moveAxis, 1);
-	moveAxis = transform * glm::vec4{ moveAxis, 0 }; // Convert to orientation space
-	cameraPos += moveSpeed * moveAxis;
+	glm::vec3 axis = GLMUtils::limitVec(input.axis, 1);
+	axis = transform * glm::vec4{ axis, 0 }; // Convert to orientation space
+	pos += moveSpeed * axis;
 
 	// Rotation
-	cameraFront = glm::rotate(cameraFront, deltaPitch, glm::cross(cameraFront, cameraUp));
-	cameraFront = glm::rotate(cameraFront, deltaYaw, cameraUp);
+	front = glm::rotate(front, deltaPitch, glm::cross(front, up));
+	front = glm::rotate(front, deltaYaw, up);
 
-	transform = glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp));
+	transform = glm::inverse(glm::lookAt(pos, pos + front, up));
 }

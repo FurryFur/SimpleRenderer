@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm\glm.hpp>
+
 struct Scene;
 struct GLFWwindow;
 
@@ -8,16 +10,18 @@ public:
 	InputSystem(GLFWwindow* window, Scene&);
 
 	void update(size_t entityID);
+	void beginFrame();
 
 private:
-	void keyCallback(int key, int scancode, int action, int mods);
+	//void keyCallback(int key, int scancode, int action, int mods);
 
 	Scene& m_scene;
 	GLFWwindow* m_window;
-	bool m_leftMoveBtnDown;
-	bool m_rightMoveBtnDown;
-	bool m_forwardMoveBtnDown;
-	bool m_backwardMoveBtnDown;
-	bool m_downMoveBtnDown;
-	bool m_upMoveBtnDown;
+	glm::dvec2 m_mouseDelta;
+	//bool m_leftBtnDown;
+	//bool m_rightBtnDown;
+	//bool m_forwardBtnDown;
+	//bool m_backwardBtnDown;
+	//bool m_downBtnDown;
+	//bool m_upBtnDown;
 };
