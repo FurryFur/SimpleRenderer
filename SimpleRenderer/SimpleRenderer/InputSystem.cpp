@@ -73,9 +73,15 @@ void InputSystem::update(size_t entityID)
 	if ((m_scene.componentMasks.at(entityID) & kInputReceiverMask) != kInputReceiverMask)
 		return;
 
-	// Update input from buttons
 	InputComponent& input = m_scene.inputComponents.at(entityID);
-	input.axis = glm::vec3{ 0 };
+
+	// Update input from mouse
+	input.orientationDelta = {};
+	if (input.mouseInputEnabled)
+		input.orientationDelta = glm::vec3{ m_mouseDelta, 0 };
+
+	// Update input from buttons
+	input.axis = {};
 	if (input.leftBtnMap && glfwGetKey(m_window, input.leftBtnMap) == GLFW_PRESS)
 		input.axis.x -= 1;
 	if (input.rightBtnMap && glfwGetKey(m_window, input.rightBtnMap) == GLFW_PRESS)
@@ -88,6 +94,14 @@ void InputSystem::update(size_t entityID)
 		input.axis.y -= 1;
 	if (input.upBtnMap && glfwGetKey(m_window, input.upBtnMap) == GLFW_PRESS)
 		input.axis.y += 1;
-
-	input.mouseDelta = m_mouseDelta;
+	if (input.azimuthPosBtnMap && glfwGetKey(m_window, input.azimuthPosBtnMap) == GLFW_PRESS)
+		input.orientationDelta.x += 1;
+	if (input.azimuthNegBtnMap && glfwGetKey(m_window, input.azimuthNegBtnMap) == GLFW_PRESS)
+		input.orientationDelta.x -= 1;
+	if (input.elevationPosBtnMap && glfwGetKey(m_window, input.elevationPosBtnMap) == GLFW_PRESS)
+		input.orientationDelta.y += 1;
+	if (input.elevationNegBtnMap && glfwGetKey(m_window, input.elevationNegBtnMap) == GLFW_PRESS)
+		input.orientationDelta.y -= 1;
+	if (input.rollBtnMap && glfwGetKey(m_window, input.rollBtnMap) == GLFW_PRESS)
+		input.orientationDelta.z += 1;
 }

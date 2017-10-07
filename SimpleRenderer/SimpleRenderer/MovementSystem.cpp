@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include "MovementSystem.h"
 
 #include "MovementComponent.h"
@@ -8,6 +10,8 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtx\rotate_vector.hpp>
+
+#include <cmath>
 
 MovementSystem::MovementSystem(Scene & scene)
 	: m_scene{ scene }
@@ -28,20 +32,29 @@ void MovementSystem::update(size_t entityID)
 	float moveSpeed = movementVars.moveSpeed;
 	float lookSensitivity = movementVars.lookSensitivity;
 
-	float deltaYaw = -lookSensitivity * input.mouseDelta.x;
-	float deltaPitch = -lookSensitivity * input.mouseDelta.y;
+	float deltaAzimuth = -lookSensitivity * input.orientationDelta.x;
+	float deltaElevation = -lookSensitivity * input.orientationDelta.y;
+	float roll = -lookSensitivity * input.orientationDelta.z;
 	glm::vec3 front = transform * glm::vec4{ 0, 0, -1, 0 }; // Convert to orientation space
-	glm::vec3 pos = transform[3];
+	glm::vec4 pos = transform[3];
 	glm::vec3 up = glm::vec3{ 0, 1, 0 };
+	glm::vec3 right = glm::cross(front, up);
 	
 	// Displacement
-	glm::vec3 axis = GLMUtils::limitVec(input.axis, 1);
-	axis = transform * glm::vec4{ axis, 0 }; // Convert to orientation space
+	glm::vec4 axis = glm::vec4{ GLMUtils::limitVec(input.axis, 1), 0 };
+	axis = transform * axis; // Convert to orientation space
 	pos += moveSpeed * axis;
 
 	// Rotation
-	front = glm::rotate(front, deltaPitch, glm::cross(front, up));
-	front = glm::rotate(front, deltaYaw, up);
+	// Prevent elevation going past 90 degrees
+	glm::mat4 elevationMat{ 1 };
+	float elevation = M_PI / 2 - std::acos(glm::dot(front, up));
+	if (std::abs(elevation + deltaElevation) < M_PI / 2)
+		elevationMat = glm::rotate(deltaElevation, right);
+	glm::mat4 azimuthMat = glm::rotate(deltaAzimuth, up);
+	glm::mat4 rollMat = glm::rotate(roll, front);
 
-	transform = glm::inverse(glm::lookAt(pos, pos + front, up));
+	transform[3] = {}; // Remove displacement temporarily
+	transform = rollMat * azimuthMat * elevationMat * transform; // Rotation without displacement
+	transform[3] = pos; // Add displacement back in
 }

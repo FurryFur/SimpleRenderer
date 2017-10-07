@@ -98,8 +98,15 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 	input.backwardBtnMap = GLFW_KEY_KP_5;
 	input.downBtnMap = GLFW_KEY_KP_7;
 	input.upBtnMap = GLFW_KEY_KP_9;
+	input.azimuthPosBtnMap = GLFW_KEY_KP_1;
+	input.azimuthNegBtnMap = GLFW_KEY_KP_2;
+	input.elevationPosBtnMap = GLFW_KEY_KP_3;
+	input.elevationNegBtnMap = GLFW_KEY_KP_DECIMAL;
+	input.rollBtnMap = GLFW_KEY_KP_0;
 
+	movementVars = {};
 	movementVars.moveSpeed = 0.1f;
+	movementVars.lookSensitivity = 0.05f;
 
 	return entityID;
 }
@@ -116,6 +123,7 @@ size_t SceneUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::v
 	glm::mat4& transform = scene.transformComponents.at(entityID);
 
 	input = {};
+	input.mouseInputEnabled = true;
 	input.leftBtnMap = GLFW_KEY_A;
 	input.rightBtnMap = GLFW_KEY_D;
 	input.forwardBtnMap = GLFW_KEY_W;

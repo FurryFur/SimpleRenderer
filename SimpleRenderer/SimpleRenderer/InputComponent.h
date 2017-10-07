@@ -5,7 +5,7 @@
 
 struct InputComponent {
 	glm::vec3 axis;
-	glm::vec2 mouseDelta;
+	glm::vec3 orientationDelta;
 
 	int leftBtnMap;
 	int rightBtnMap;
@@ -13,4 +13,10 @@ struct InputComponent {
 	int backwardBtnMap;
 	int upBtnMap;
 	int downBtnMap;
+	int azimuthPosBtnMap;
+	int azimuthNegBtnMap;
+	int elevationPosBtnMap;
+	int elevationNegBtnMap;
+	int rollBtnMap;
+	bool mouseInputEnabled;
 };
