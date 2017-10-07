@@ -2,6 +2,6 @@
 
 struct MovementComponent {
 	float moveSpeed;
-	float lookSensitivity;
+	float orientationSensitivity;
 	bool worldSpaceMove;
 };

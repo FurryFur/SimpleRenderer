@@ -1,5 +1,6 @@
 #include "InputSystem.h"
 
+#include "KeyObserver.h"
 #include "Scene.h"
 
 #include <GLFW\glfw3.h>
@@ -11,21 +12,25 @@ InputSystem::InputSystem(GLFWwindow* window, Scene& scene)
 	// Register input system as a listener for keyboard events
 	glfwSetWindowUserPointer(window, this);
 	auto keyFunc = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		//InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
-		//inputSystem->keyCallback(key, scancode, action, mods);
+		InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
+		inputSystem->keyCallback(key, scancode, action, mods);
 
 		// Close window on exit
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	};
 	glfwSetKeyCallback(window, keyFunc);
+}
 
-	// Register input system as a listener for mouse move events
-	//auto mouseFunc = [](GLFWwindow* window, double xpos, double ypos) {
-	//	InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
-	//	inputSystem->mouseMoveCallback(glm::vec2{ static_cast<float>(xpos), static_cast<float>(ypos) });
-	//};
-	//glfwSetCursorPosCallback(window, mouseFunc);
+void InputSystem::registerKeyObserver(IKeyObserver* observer)
+{
+	m_keyObservers.push_back(observer);
+}
+
+void InputSystem::keyCallback(int key, int scancode, int action, int mods)
+{
+	for (auto& observer : m_keyObservers)
+		observer->keyCallback(key, scancode, action, mods);
 }
 
 void InputSystem::beginFrame()
@@ -48,23 +53,6 @@ void InputSystem::beginFrame()
 
 	lastMousePos = mousePos;
 }
-
-//void InputSystem::keyCallback(int key, int scancode, int action, int mods)
-//{
-//	// TODO: These mappings should not be hard coded here. Should instead be mapped in input component on entity creation
-//	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_leftBtnDown = (action == GLFW_PRESS);
-//	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_rightBtnDown = (action == GLFW_PRESS);
-//	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_forwardBtnDown = (action == GLFW_PRESS);
-//	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_backwardBtnDown = (action == GLFW_PRESS);
-//	if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_downBtnDown = (action == GLFW_PRESS);
-//	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_RELEASE))
-//		m_upBtnDown = (action == GLFW_PRESS);
-//}
 
 void InputSystem::update(size_t entityID)
 {

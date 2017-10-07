@@ -30,11 +30,11 @@ void MovementSystem::update(size_t entityID)
 	InputComponent& input = m_scene.inputComponents.at(entityID);
 
 	float moveSpeed = movementVars.moveSpeed;
-	float lookSensitivity = movementVars.lookSensitivity;
+	float orientationSensitivity = movementVars.orientationSensitivity;
 
-	float deltaAzimuth = -lookSensitivity * input.orientationDelta.x;
-	float deltaElevation = -lookSensitivity * input.orientationDelta.y;
-	float roll = -lookSensitivity * input.orientationDelta.z;
+	float deltaAzimuth = -orientationSensitivity * input.orientationDelta.x;
+	float deltaElevation = -orientationSensitivity * input.orientationDelta.y;
+	float roll = -orientationSensitivity * input.orientationDelta.z;
 	glm::vec3 front = glm::vec3{ 0, 0, -1 };
 	if (!movementVars.worldSpaceMove)
 		front = transform * glm::vec4{ front, 0 }; // Convert movement to local coordinates

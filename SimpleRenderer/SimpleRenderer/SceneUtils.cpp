@@ -56,9 +56,17 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 	scene.transformComponents.at(entityID) = transform;
 	MeshComponent& mesh = scene.meshComponents.at(entityID);
 	MaterialComponent& material = scene.materialComponents.at(entityID);
+	InputComponent& input = scene.inputComponents.at(entityID);
+	MovementComponent& movementVars = scene.movementComponents.at(entityID);
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
+
+	setDefaultWorldMoveInputBindings(input);
+
+	movementVars.moveSpeed = 0.1f;
+	movementVars.orientationSensitivity = 0.05f;
+	movementVars.worldSpaceMove = true;
 
 	mesh = getQuadMesh();
 
@@ -69,7 +77,7 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 {
 	size_t entityID = createEntity(scene);
 	size_t& componentMask = scene.componentMasks.at(entityID);
-	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_INPUT | COMPONENT_MOVEMENT;
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
 
 	// Get references to components
 	glm::mat4& transform = scene.transformComponents.at(entityID);
@@ -85,22 +93,10 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 
 	mesh = getSphereMesh();
 
-	input = {};
-	input.leftBtnMap = GLFW_KEY_KP_4;
-	input.rightBtnMap = GLFW_KEY_KP_6;
-	input.forwardBtnMap = GLFW_KEY_KP_8;
-	input.backwardBtnMap = GLFW_KEY_KP_5;
-	input.downBtnMap = GLFW_KEY_KP_7;
-	input.upBtnMap = GLFW_KEY_KP_9;
-	input.azimuthPosBtnMap = GLFW_KEY_KP_1;
-	input.azimuthNegBtnMap = GLFW_KEY_KP_2;
-	input.elevationPosBtnMap = GLFW_KEY_KP_3;
-	input.elevationNegBtnMap = GLFW_KEY_KP_DECIMAL;
-	input.rollBtnMap = GLFW_KEY_KP_0;
+	setDefaultWorldMoveInputBindings(input);
 
-	movementVars = {};
 	movementVars.moveSpeed = 0.1f;
-	movementVars.lookSensitivity = 0.05f;
+	movementVars.orientationSensitivity = 0.05f;
 	movementVars.worldSpaceMove = true;
 
 	return entityID;
@@ -127,19 +123,37 @@ size_t SceneUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::v
 	input.upBtnMap = GLFW_KEY_E;
 
 	movementVars.moveSpeed = 0.1f;
-	movementVars.lookSensitivity = 0.005f;
+	movementVars.orientationSensitivity = 0.005f;
 	movementVars.worldSpaceMove = false;
 
-	transform = glm::inverse(glm::lookAt(pos, center, glm::vec3{ 0, 1, 0 }));
+	transform = glm::inverse(glm::lookAt(pos, center, up));
 
 	return entityID;
 }
 
+void SceneUtils::setDefaultWorldMoveInputBindings(InputComponent& input)
+{
+	input = {};
+	input.leftBtnMap = GLFW_KEY_KP_4;
+	input.rightBtnMap = GLFW_KEY_KP_6;
+	input.forwardBtnMap = GLFW_KEY_KP_8;
+	input.backwardBtnMap = GLFW_KEY_KP_5;
+	input.downBtnMap = GLFW_KEY_KP_7;
+	input.upBtnMap = GLFW_KEY_KP_9;
+	input.azimuthPosBtnMap = GLFW_KEY_KP_1;
+	input.azimuthNegBtnMap = GLFW_KEY_KP_2;
+	input.elevationPosBtnMap = GLFW_KEY_KP_3;
+	input.elevationNegBtnMap = GLFW_KEY_KP_DECIMAL;
+	input.rollBtnMap = GLFW_KEY_KP_0;
+}
+
 const std::vector<VertexFormat>& SceneUtils::getSphereVertices()
 {
+	static const size_t numVertices = (g_kThetaSegments + 1) * (g_kPhiSegments + 1);
 	static std::vector<VertexFormat> s_vertices;
 
 	if (s_vertices.size() == 0) {
+		s_vertices.reserve(numVertices);
 		// Theta is angle from top of sphere
 		for (size_t i = 0; i < g_kThetaSegments + 1; ++i) {
 			float theta = i * g_kDThetaSphere;
@@ -163,6 +177,7 @@ const std::vector<GLuint>& SceneUtils::getSphereIndices()
 	static std::vector<GLuint> s_indices;
 
 	if (s_indices.size() == 0) {
+		s_indices.reserve(numVertices);
 		for (GLuint i = 0; i < g_kThetaSegments + 1; ++i) {
 			for (GLuint j = 0; j < g_kPhiSegments + 1; ++j) {
 				GLuint vertIdxTopLeft = i * g_kPhiSegments + j;
