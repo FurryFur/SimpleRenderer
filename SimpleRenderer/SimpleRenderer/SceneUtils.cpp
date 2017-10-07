@@ -107,6 +107,7 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 	movementVars = {};
 	movementVars.moveSpeed = 0.1f;
 	movementVars.lookSensitivity = 0.05f;
+	movementVars.worldSpaceMove = true;
 
 	return entityID;
 }
@@ -133,6 +134,7 @@ size_t SceneUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::v
 
 	movementVars.moveSpeed = 0.1f;
 	movementVars.lookSensitivity = 0.005f;
+	movementVars.worldSpaceMove = false;
 
 	transform = glm::inverse(glm::lookAt(pos, center, glm::vec3{ 0, 1, 0 }));
 
