@@ -22,13 +22,16 @@ namespace SceneUtils {
 
 	// Creates a unit square facing down the positive z axis with the 
 	// specified transform
-	size_t createQuad(Scene&, const glm::mat4& transform);
+	size_t createQuad(Scene&, const glm::mat4& transform = glm::mat4{ 1 });
 
 	// Creates a unit sphere, centered at the origin, with the specified 
 	// transform;
-	size_t createSphere(Scene&, const glm::mat4& transform);
+	size_t createSphere(Scene&, const glm::mat4& transform = glm::mat4{ 1 });
 
-	//size_t createCylinder(Scene&, glm::mat4 transform, size_t radius, size_t length);
+	// Create a cylinder with the specified radius and height.
+	// The center of the base will be at the origin by default,
+	// Unless a transform is specified.
+	size_t createCylinder(Scene&, float radius, float height, const glm::mat4& transform);
 
 	size_t createCamera(Scene&, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up = glm::vec3{ 0, 1, 0 });
 
@@ -38,6 +41,9 @@ namespace SceneUtils {
 	const std::vector<GLuint>& getQuadIndices();
 	const std::vector<VertexFormat>& getSphereVertices();
 	const std::vector<GLuint>& getSphereIndices();
+	const std::vector<VertexFormat>& getCylinderVertices();
+	const std::vector<GLuint>& getCylinderIndices();
 	MeshComponent getQuadMesh();
 	MeshComponent getSphereMesh();
+	MeshComponent getCylinderMesh();
 }

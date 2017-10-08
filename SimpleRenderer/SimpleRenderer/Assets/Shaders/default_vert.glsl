@@ -13,11 +13,13 @@ uniform Uniforms {
 out VertexData {
     vec4 normal;
     vec2 texCoord;
+    vec3 viewPos;
 } o;
 
 void main()
 {
-    gl_Position = u.projection * u.view * u.model * vec4(inPosition, 1.0f);
+    o.viewPos = (u.view * u.model * vec4(inPosition, 1.0f)).xyz;
+    gl_Position = u.projection * vec4(o.viewPos, 1.0f);
     o.normal = u.model * vec4(inNormal, 0); // TODO: Do inverse transpose
     o.texCoord = inTexCoord;
 }

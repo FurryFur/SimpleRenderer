@@ -14,10 +14,6 @@ InputSystem::InputSystem(GLFWwindow* window, Scene& scene)
 	auto keyFunc = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		InputSystem* inputSystem = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
 		inputSystem->keyCallback(key, scancode, action, mods);
-
-		// Close window on exit
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	};
 	glfwSetKeyCallback(window, keyFunc);
 }
@@ -29,6 +25,12 @@ void InputSystem::registerKeyObserver(IKeyObserver* observer)
 
 void InputSystem::keyCallback(int key, int scancode, int action, int mods)
 {
+	// Close window on exit
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		glfwSetWindowShouldClose(m_window, GLFW_TRUE);
+		return;
+	}
+
 	for (auto& observer : m_keyObservers)
 		observer->keyCallback(key, scancode, action, mods);
 }
