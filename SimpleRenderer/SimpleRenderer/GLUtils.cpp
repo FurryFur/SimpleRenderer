@@ -132,8 +132,11 @@ GLuint GLUtils::bufferVertices(const std::vector<VertexFormat>& vertices, const 
 	return VAO;
 }
 
+
 GLuint GLUtils::loadTexture(const std::string& filename)
 {
+	// TODO: Make cached so duplicate textures aren't loaded to the GPU
+
 	int width, height, nrChannels;
 	unsigned char* textureData = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
 
