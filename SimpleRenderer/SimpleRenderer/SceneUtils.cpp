@@ -313,9 +313,9 @@ const std::vector<GLuint>& SceneUtils::getCylinderIndices()
 	if (s_indices.size() == 0) {
 		s_indices.reserve(g_kCylinderThetaSegments * 6);
 		for (size_t i = 0; i < g_kCylinderThetaSegments; ++i) {
-			GLuint topLeft = i;
+			GLuint topLeft = static_cast<GLuint>(i);
 			GLuint topRight = topLeft + 1;
-			GLuint bottomLeft = g_kCylinderThetaSegments + 1 + i;
+			GLuint bottomLeft = static_cast<GLuint>(g_kCylinderThetaSegments + 1 + i);
 			GLuint bottomRight = bottomLeft + 1;
 
 			s_indices.push_back(topLeft);
