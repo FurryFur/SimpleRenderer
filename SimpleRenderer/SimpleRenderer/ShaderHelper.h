@@ -6,7 +6,7 @@
 //
 // (c) 2017 Media Design School
 //
-// Description  : Utils for shader operations
+// Description  : Utility functions for compiling and linking shaders.
 // Author       : Lance Chaney
 // Mail         : lance.cha7337@mediadesign.school.nz
 //

@@ -1,3 +1,17 @@
+//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2017 Media Design School
+//
+// Description  : The main game logic goes here.
+//                This is class is intended to contain all non-portable code.
+// Author       : Lance Chaney
+// Mail         : lance.cha7337@mediadesign.school.nz
+//
+
 #include "GameplayLogicSystem.h"
 
 #include "InputSystem.h"
