@@ -36,7 +36,7 @@ int main()
 
 	SceneUtils::createSphere(scene, glm::translate({}, glm::vec3{ -1.5f, 1.5f, 0 }));
 	SceneUtils::createQuad(scene, glm::translate({}, glm::vec3{ 1.5f, 1.5f, 0}));
-	SceneUtils::createCylinder(scene, 2, 2, glm::translate({}, glm::vec3{ -1.5f, -1.5f, 0 }));
+	SceneUtils::createCylinder(scene, 1.5, 1.5, glm::translate({}, glm::vec3{ -1.5f, -1.5f, 0 }));
 	SceneUtils::createPyramid(scene, glm::translate({}, glm::vec3{ 1.5f, -1.5f, 0 }));
 
 	size_t cameraEntity = SceneUtils::createCamera(scene, { 0, 0, 6 }, { 0, 0, 0 }, { 0, 1, 0 });

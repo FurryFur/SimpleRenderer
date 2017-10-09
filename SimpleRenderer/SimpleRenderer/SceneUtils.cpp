@@ -65,8 +65,8 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture3.png");
-	material.shaderParams.metallicness = 0.1f;
-	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
+	material.shaderParams.metallicness = 1.0f;
+	material.shaderParams.glossiness = 75.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	setDefaultInputBindings(input);
 
