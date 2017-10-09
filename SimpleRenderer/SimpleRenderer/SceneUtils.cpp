@@ -16,8 +16,6 @@ const size_t g_kCylinderThetaSegments = 16; // Number of segments going around t
 const float g_kDThetaSphere = static_cast<float>(M_PI / g_kSphereThetaSegments);
 const float g_kDPhiSphere = static_cast<float>(2 * M_PI / g_kSpherePhiSegments);
 const float g_kDThetaCylinder = static_cast<float>(2 * M_PI / g_kCylinderThetaSegments);
-const size_t g_kNumVerticesCylinder = (g_kCylinderThetaSegments + 1) * 2;
-const size_t g_kNumVerticesSphere = (g_kSphereThetaSegments + 1) * (g_kSpherePhiSegments + 1);
 
 size_t SceneUtils::createEntity(Scene& scene)
 {
@@ -35,6 +33,7 @@ size_t SceneUtils::createEntity(Scene& scene)
 	scene.materialComponents.emplace_back();
 	scene.inputComponents.emplace_back();
 	scene.movementComponents.emplace_back();
+	scene.logicComponents.emplace_back();
 
 	return scene.componentMasks.size() - 1;
 }
@@ -54,7 +53,7 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 {
 	size_t entityID = createEntity(scene);
 	size_t& componentMask = scene.componentMasks.at(entityID);
-	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_LOGIC;
 
 	// Get references to components
 	scene.transformComponents.at(entityID) = transform;
@@ -62,9 +61,10 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 	MaterialComponent& material = scene.materialComponents.at(entityID);
 	InputComponent& input = scene.inputComponents.at(entityID);
 	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	LogicComponent& logicVars = scene.logicComponents.at(entityID);
 
 	material.shader = GLUtils::getDefaultShader();
-	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
+	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture3.png");
 	material.shaderParams.metallicness = 0.1f;
 	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
@@ -76,6 +76,8 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 
 	mesh = getQuadMesh();
 
+	logicVars.rotationAxis = glm::vec3{ 0, 0, 1 };
+
 	return entityID;
 }
 
@@ -83,7 +85,7 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 {
 	size_t entityID = createEntity(scene);
 	size_t& componentMask = scene.componentMasks.at(entityID);
-	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_LOGIC;
 
 	// Get references to components
 	glm::mat4& transform = scene.transformComponents.at(entityID);
@@ -91,13 +93,14 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 	MaterialComponent& material = scene.materialComponents.at(entityID);
 	InputComponent& input = scene.inputComponents.at(entityID);
 	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	LogicComponent& logicVars = scene.logicComponents.at(entityID);
 
 	transform = _transform;
 
 	material.shader = GLUtils::getDefaultShader();
-	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
-	material.shaderParams.metallicness = 0.1f;
-	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
+	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture2.jpg");
+	material.shaderParams.metallicness = 0.3f;
+	material.shaderParams.glossiness = 2.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	mesh = getSphereMesh();
 
@@ -107,6 +110,8 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 	movementVars.orientationSensitivity = 0.05f;
 	movementVars.worldSpaceMove = true;
 
+	logicVars.rotationAxis = glm::vec3{ 0, 1, 0 };
+
 	return entityID;
 }
 
@@ -114,7 +119,7 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 {
 	size_t entityID = createEntity(scene);
 	size_t& componentMask = scene.componentMasks.at(entityID);
-	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_LOGIC;
 
 	// Get references to components
 	glm::mat4& transform = scene.transformComponents.at(entityID);
@@ -122,13 +127,14 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 	MaterialComponent& material = scene.materialComponents.at(entityID);
 	InputComponent& input = scene.inputComponents.at(entityID);
 	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	LogicComponent& logicVars = scene.logicComponents.at(entityID);
 
 	transform = _transform;
 
-	material.shader = GLUtils::getDefaultShader();
-	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
-	material.shaderParams.metallicness = 0.1f;
-	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
+	material.shader = GLUtils::getThresholdShader();
+	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture4.jpg");
+	material.shaderParams.metallicness = 0.75f;
+	material.shaderParams.glossiness = 40.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	mesh = getCylinderMesh();
 
@@ -137,6 +143,42 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 	movementVars.moveSpeed = 0.1f;
 	movementVars.orientationSensitivity = 0.05f;
 	movementVars.worldSpaceMove = true;
+
+	logicVars.rotationAxis = glm::vec3{ 0, 1, 0 };
+
+	return entityID;
+}
+
+size_t SceneUtils::createPyramid(Scene& scene, const glm::mat4& _transform)
+{
+	size_t entityID = createEntity(scene);
+	size_t& componentMask = scene.componentMasks.at(entityID);
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_LOGIC;
+
+	// Get references to components
+	glm::mat4& transform = scene.transformComponents.at(entityID);
+	MeshComponent& mesh = scene.meshComponents.at(entityID);
+	MaterialComponent& material = scene.materialComponents.at(entityID);
+	InputComponent& input = scene.inputComponents.at(entityID);
+	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	LogicComponent& logicVars = scene.logicComponents.at(entityID);
+
+	transform = _transform;
+
+	material.shader = GLUtils::getDefaultShader();
+	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture.jpg");
+	material.shaderParams.metallicness = 0.95f;
+	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
+
+	mesh = getPyramidMesh();
+
+	setDefaultInputBindings(input);
+
+	movementVars.moveSpeed = 0.1f;
+	movementVars.orientationSensitivity = 0.05f;
+	movementVars.worldSpaceMove = true;
+
+	logicVars.rotationAxis = glm::vec3{ 0, 1, 0 };
 
 	return entityID;
 }
@@ -195,17 +237,17 @@ const std::vector<VertexFormat>& SceneUtils::getSphereVertices()
 	static std::vector<VertexFormat> s_vertices;
 
 	if (s_vertices.size() == 0) {
-		s_vertices.reserve(g_kNumVerticesSphere);
-		// Theta is angle from top of sphere
+		s_vertices.reserve((g_kSphereThetaSegments + 1) * (g_kSpherePhiSegments + 1));
+		// Theta is zenith angle from top of sphere
 		for (size_t i = 0; i < g_kSphereThetaSegments + 1; ++i) {
-			float theta = i * g_kDThetaSphere;
-			for (size_t j = 0; j < g_kSpherePhiSegments + 1; ++j) {
+			for (size_t j = 0; j < g_kSpherePhiSegments + 1; ++j) { // Output extra vertices for seem texture coordinates
+				float theta = i * g_kDThetaSphere;
 				float phi = j * g_kDPhiSphere;
 				glm::vec3 position = { -sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi) };
 				s_vertices.emplace_back(VertexFormat{
-					position,                   // Position
-					position,                   // Normal (same as position for a unit sphere)
-					glm::vec2{ phi, theta } }); // Texture Coordinate
+					position,                    // Position
+					position,                    // Normal (same as position for a unit sphere)
+					glm::vec2{ phi, -theta } }); // Texture Coordinate
 			}
 		}
 	}
@@ -218,22 +260,20 @@ const std::vector<GLuint>& SceneUtils::getSphereIndices()
 	static std::vector<GLuint> s_indices;
 
 	if (s_indices.size() == 0) {
-		s_indices.reserve(g_kNumVerticesSphere);
-		for (GLuint i = 0; i < g_kSphereThetaSegments + 1; ++i) {
-			for (GLuint j = 0; j < g_kSpherePhiSegments + 1; ++j) {
-				GLuint vertIdxTopLeft = i * g_kSpherePhiSegments + j;
-				GLuint vertIdxTopRight = vertIdxTopLeft + 1;
-				GLuint vertIdxBottomLeft = (i + 1) * g_kSpherePhiSegments + j;
-				GLuint vertIdxBottomRight = vertIdxBottomLeft + 1;
-				if ((vertIdxTopLeft    < g_kNumVerticesSphere) && (vertIdxTopRight    < g_kNumVerticesSphere)
-				&&  (vertIdxBottomLeft < g_kNumVerticesSphere) && (vertIdxBottomRight < g_kNumVerticesSphere)) {
-					s_indices.push_back(vertIdxTopLeft);
-					s_indices.push_back(vertIdxBottomRight);
-					s_indices.push_back(vertIdxTopRight);
-					s_indices.push_back(vertIdxTopLeft);
-					s_indices.push_back(vertIdxBottomLeft);
-					s_indices.push_back(vertIdxBottomRight);
-				}
+		s_indices.reserve(g_kSphereThetaSegments * g_kSpherePhiSegments * 6);
+		for (GLuint i = 0; i < g_kSphereThetaSegments; ++i) {
+			for (GLuint j = 0; j < g_kSpherePhiSegments; ++j) {
+				GLuint topLeft = i * (g_kSpherePhiSegments + 1) + j;          // Need to add 1 for extra texCoord vertices at seem
+				GLuint topRight = topLeft + 1;
+				GLuint bottomLeft = (i + 1) * (g_kSpherePhiSegments + 1) + j; // Need to add 1 for extra texCoord vertices at seem
+				GLuint bottomRight = bottomLeft + 1;
+
+				s_indices.push_back(topLeft);
+				s_indices.push_back(bottomLeft);
+				s_indices.push_back(bottomRight);
+				s_indices.push_back(topLeft);
+				s_indices.push_back(bottomRight);
+				s_indices.push_back(topRight);
 			}
 		}
 	}
@@ -247,18 +287,18 @@ const std::vector<VertexFormat>& SceneUtils::getCylinderVertices()
 	static std::vector<VertexFormat> s_vertices;
 
 	if (s_vertices.size() == 0) {
-		s_vertices.reserve(g_kNumVerticesCylinder);
+		s_vertices.reserve(2 * (g_kCylinderThetaSegments + 1));
 		// There are two groups of vertices in a cylinder
 		// One group at the top, and one at the bottom.
 		for (size_t i = 0; i < 2; ++i) {
-			for (size_t j = 0; j < g_kCylinderThetaSegments + 1; ++j) {
+			for (size_t j = 0; j < g_kCylinderThetaSegments + 1; ++j) {  // Output extra vertices for seem texture coordinates
 				float theta = j * g_kDThetaCylinder;
-				float y = height - i;
+				float y = height / 2 - i * height;
 				glm::vec3 position = { cos(theta), y, -sin(theta) };
 				s_vertices.emplace_back(VertexFormat{
 					position,                                             // Position
 					glm::normalize(glm::vec3(position.x, 0, position.z)), // Normal
-					glm::vec2{ theta / M_2_PI, y / height } });           // Texture Coordinate
+					glm::vec2{ theta * 2 / M_PI, (1 - i) } });            // Texture Coordinate
 			}
 		}
 	}
@@ -271,25 +311,87 @@ const std::vector<GLuint>& SceneUtils::getCylinderIndices()
 	static std::vector<GLuint> s_indices;
 
 	if (s_indices.size() == 0) {
-		s_indices.reserve(g_kNumVerticesCylinder);
-		for (size_t i = 0; i < 2; ++i) {
-			for (size_t j = 0; j < g_kCylinderThetaSegments + 1; ++j) {
-				GLuint vertIdxTopLeft = static_cast<GLuint>(i * g_kCylinderThetaSegments + j);
-				GLuint vertIdxTopRight = vertIdxTopLeft + 1;
-				GLuint vertIdxBottomLeft = static_cast<GLuint>((i + 1) * g_kCylinderThetaSegments + j);
-				GLuint vertIdxBottomRight = vertIdxBottomLeft + 1;
-				if ((vertIdxTopLeft   < g_kNumVerticesCylinder)  && (vertIdxTopRight    < g_kNumVerticesCylinder)
-				&&  (vertIdxBottomLeft < g_kNumVerticesCylinder) && (vertIdxBottomRight < g_kNumVerticesCylinder)) {
-					s_indices.push_back(vertIdxTopLeft);
-					s_indices.push_back(vertIdxBottomRight);
-					s_indices.push_back(vertIdxTopRight);
-					s_indices.push_back(vertIdxTopLeft);
-					s_indices.push_back(vertIdxBottomLeft);
-					s_indices.push_back(vertIdxBottomRight);
-				}
-			}
+		s_indices.reserve(g_kCylinderThetaSegments * 6);
+		for (size_t i = 0; i < g_kCylinderThetaSegments; ++i) {
+			GLuint topLeft = i;
+			GLuint topRight = topLeft + 1;
+			GLuint bottomLeft = g_kCylinderThetaSegments + 1 + i;
+			GLuint bottomRight = bottomLeft + 1;
+
+			s_indices.push_back(topLeft);
+			s_indices.push_back(bottomLeft);
+			s_indices.push_back(bottomRight);
+			s_indices.push_back(topLeft);
+			s_indices.push_back(bottomRight);
+			s_indices.push_back(topRight);
 		}
 	}
+
+	return s_indices;
+}
+
+const std::vector<VertexFormat>& SceneUtils::getPyramidVertices()
+{
+	static const glm::vec3 top =        { -0,  1,  0 };
+	static const glm::vec3 frontLeft =  { -1, -1,  1 };
+	static const glm::vec3 frontRight = {  1, -1,  1 };
+	static const glm::vec3 backLeft =   { -1, -1, -1 };
+	static const glm::vec3 backRight =  {  1, -1, -1 };
+	static const glm::vec3 frontNormal  = glm::normalize(glm::cross(frontLeft - top, frontRight - frontLeft));
+	static const glm::vec3 leftNormal   = glm::normalize(glm::cross(backLeft - top,  frontLeft - backLeft));
+	static const glm::vec3 rightNormal  = glm::normalize(glm::cross(frontRight - top, backRight - frontRight));
+	static const glm::vec3 backNormal   = glm::normalize(glm::cross(backRight - top, backLeft - backRight));
+	static const glm::vec3 bottomNormal = glm::normalize(glm::cross(frontLeft - frontRight, backLeft - frontLeft));
+	static const std::vector<VertexFormat> s_vertices = {
+		// Front side
+		{ top,        frontNormal,{ 0.5, 1 } },
+		{ frontLeft,  frontNormal,{ 0,   0 } },
+		{ frontRight, frontNormal,{ 1,   0 } },
+
+		// Back side
+		{ top,       backNormal,{ 0.5, 1 } },
+		{ backRight, backNormal,{ 0,   0 } },
+		{ backLeft,  backNormal,{ 1,   0 } },
+
+		// Left side
+		{ top,       leftNormal,{ 0.5, 1 } },
+		{ backLeft,  leftNormal,{ 0,   0 } },
+		{ frontLeft, leftNormal,{ 1,   0 } },
+
+		// Right side
+		{ top,        rightNormal,{ 0.5, 1 } },
+		{ frontRight, rightNormal,{ 0,   0 } },
+		{ backRight,  rightNormal,{ 1,   0 } },
+
+		// Bottom
+		{ frontRight, bottomNormal, { 1, 1 } },
+		{ frontLeft,  bottomNormal, { 0, 1 } },
+		{ backLeft,   bottomNormal, { 0, 0 } },
+		{ backRight,  bottomNormal, { 1, 0 } },
+	};
+
+	return s_vertices;
+}
+
+const std::vector<GLuint>& SceneUtils::getPyramidIndices()
+{
+	static const std::vector<GLuint> s_indices = {
+		// Front side
+		0, 1, 2,
+
+		// Back side
+		3, 4, 5,
+
+		// Left side
+		6, 7, 8,
+
+		// Right side
+		9, 10, 11,
+
+		// Bottom
+		12, 13, 14,
+		12, 14, 15
+	};
 
 	return s_indices;
 }
@@ -344,6 +446,18 @@ MeshComponent SceneUtils::getCylinderMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getCylinderVertices();
 	static const std::vector<GLuint>& indices = getCylinderIndices();
+	static const MeshComponent mesh{
+		GLUtils::bufferVertices(vertices, indices),
+		static_cast<GLsizei>(indices.size())
+	};
+
+	return mesh;
+}
+
+MeshComponent SceneUtils::getPyramidMesh()
+{
+	static const std::vector<VertexFormat>& vertices = getPyramidVertices();
+	static const std::vector<GLuint>& indices = getPyramidIndices();
 	static const MeshComponent mesh{
 		GLUtils::bufferVertices(vertices, indices),
 		static_cast<GLsizei>(indices.size())

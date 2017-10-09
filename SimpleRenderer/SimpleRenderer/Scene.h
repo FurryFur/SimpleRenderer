@@ -4,6 +4,7 @@
 #include "MeshComponent.h"
 #include "MaterialComponent.h"
 #include "MovementComponent.h"
+#include "LogicComponent.h"
 
 #include <glm\glm.hpp>
 
@@ -18,7 +19,8 @@ enum ComponentMask {
 	COMPONENT_MATERIAL = 1 << 4,
 	COMPONENT_CAMERA = 1 << 5,
 	COMPONENT_MOVEMENT = 1 << 6,
-	COMPONENT_INPUT = 1 << 7
+	COMPONENT_INPUT = 1 << 7,
+	COMPONENT_LOGIC = 1 << 8
 };
 
 struct Scene {
@@ -30,4 +32,5 @@ struct Scene {
 	std::vector<MaterialComponent> materialComponents;
 	std::vector<MovementComponent> movementComponents;
 	std::vector<InputComponent> inputComponents;
+	std::vector<LogicComponent> logicComponents;
 };

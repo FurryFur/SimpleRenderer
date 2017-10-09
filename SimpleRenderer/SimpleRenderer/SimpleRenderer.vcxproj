@@ -155,6 +155,7 @@
     <ClInclude Include="KeyObserver.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="LogicComponent.h" />
     <ClInclude Include="MaterialComponent.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MovementComponent.h" />
@@ -172,6 +173,7 @@
   <ItemGroup>
     <None Include="Assets\Shaders\default_frag.glsl" />
     <None Include="Assets\Shaders\default_vert.glsl" />
+    <None Include="Assets\Shaders\threshold_frag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\PlaneTexture.jpg" />

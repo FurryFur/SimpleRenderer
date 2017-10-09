@@ -46,4 +46,7 @@ void main(void)
 	vec3 LrAmbient = color * LiAmbient;
 
     outColor = vec4(LrDirect + LrAmbient, 1);
+
+	if (outColor.r < 0.1f)
+		discard;
 }

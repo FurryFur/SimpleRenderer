@@ -20,4 +20,7 @@ private:
 	size_t m_possessedEntity;
 	bool m_oldPossessedEntityUpdated;
 	bool m_newPossessedEntityUpdated;
+
+	// Change in object rotation per frame
+	float m_dTheta;
 };

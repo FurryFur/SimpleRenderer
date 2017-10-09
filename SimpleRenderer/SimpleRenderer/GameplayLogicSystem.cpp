@@ -5,8 +5,11 @@
 #include "ShaderParams.h"
 #include "Scene.h"
 #include "Utils.h"
+#include "LogicComponent.h"
 
 #include <GLFW\glfw3.h>
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 GameplayLogicSystem::GameplayLogicSystem(Scene& scene, InputSystem& inputSystem)
 	: m_scene{ scene }
@@ -14,6 +17,7 @@ GameplayLogicSystem::GameplayLogicSystem(Scene& scene, InputSystem& inputSystem)
 	, m_possessedEntity{ 0 }
 	, m_oldPossessedEntityUpdated{ true }
 	, m_newPossessedEntityUpdated{ false }
+	, m_dTheta{ 0.01f }
 {
 	inputSystem.registerKeyObserver(this);
 }
@@ -34,6 +38,16 @@ void GameplayLogicSystem::update(size_t entityID)
 		componentMask |= (COMPONENT_INPUT | COMPONENT_MOVEMENT);
 		m_newPossessedEntityUpdated = true;
 		return;
+	}
+
+	const size_t kSpinnable = COMPONENT_TRANSFORM | COMPONENT_MESH | COMPONENT_LOGIC;
+	if ((m_scene.componentMasks.at(entityID) & kSpinnable) == kSpinnable) {
+		glm::mat4& transform = m_scene.transformComponents.at(entityID);
+		LogicComponent& logicVars = m_scene.logicComponents.at(entityID);
+		glm::vec3 pos = transform[3];
+		transform[3] = { 0, 0, 0, 1 }; // Remove displacement temporarily
+		transform = glm::rotate(transform, m_dTheta, logicVars.rotationAxis);
+		transform[3] = glm::vec4{ pos, 1 }; // Add displacement back in
 	}
 
 	const size_t kModifiableGlossMask = COMPONENT_MATERIAL | COMPONENT_INPUT;
@@ -58,6 +72,9 @@ void GameplayLogicSystem::update(size_t entityID)
 
 void GameplayLogicSystem::keyCallback(int key, int scancode, int action, int mods)
 {
+	if (key == GLFW_KEY_GRAVE_ACCENT && action == GLFW_PRESS)
+		m_dTheta = -m_dTheta;
+
 	// Skip keys we aren't interested in
 	if (!(key == GLFW_KEY_1 || key == GLFW_KEY_2 || key == GLFW_KEY_3 || key == GLFW_KEY_4))
 		return;

@@ -15,6 +15,7 @@ namespace GLUtils {
 	GLFWwindow* initOpenGL();
 
 	GLuint getDefaultShader();
+	GLuint getThresholdShader();
 
 	GLuint bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices);
 

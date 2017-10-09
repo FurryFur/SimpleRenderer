@@ -33,6 +33,8 @@ namespace SceneUtils {
 	// Unless a transform is specified.
 	size_t createCylinder(Scene&, float radius, float height, const glm::mat4& transform);
 
+	size_t createPyramid(Scene&, const glm::mat4& transform);
+
 	size_t createCamera(Scene&, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up = glm::vec3{ 0, 1, 0 });
 
 	void setDefaultInputBindings(InputComponent& input);
@@ -43,7 +45,10 @@ namespace SceneUtils {
 	const std::vector<GLuint>& getSphereIndices();
 	const std::vector<VertexFormat>& getCylinderVertices();
 	const std::vector<GLuint>& getCylinderIndices();
+	const std::vector<VertexFormat>& getPyramidVertices();
+	const std::vector<GLuint>& getPyramidIndices();
 	MeshComponent getQuadMesh();
 	MeshComponent getSphereMesh();
 	MeshComponent getCylinderMesh();
+	MeshComponent getPyramidMesh();
 }

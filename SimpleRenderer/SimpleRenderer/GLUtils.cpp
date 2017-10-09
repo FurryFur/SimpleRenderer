@@ -75,18 +75,34 @@ GLFWwindow* GLUtils::initOpenGL()
 
 GLuint GLUtils::getDefaultShader()
 {
-	static GLuint shader;
-	static bool shaderBuilt = false;
+	static GLuint s_shader;
+	static bool s_shaderBuilt = false;
 
-	if (!shaderBuilt) {
+	if (!s_shaderBuilt) {
 		compileAndLinkShaders(
 			"Assets/Shaders/default_vert.glsl",
 			"Assets/Shaders/default_frag.glsl",
-			shader);
-		shaderBuilt = true;
+			s_shader);
+		s_shaderBuilt = true;
 	}
 
-	return shader;
+	return s_shader;
+}
+
+GLuint GLUtils::getThresholdShader()
+{
+	static GLuint s_shader;
+	static bool s_shaderBuilt = false;
+
+	if (!s_shaderBuilt) {
+		compileAndLinkShaders(
+			"Assets/Shaders/default_vert.glsl",
+			"Assets/Shaders/threshold_frag.glsl",
+			s_shader);
+		s_shaderBuilt = true;
+	}
+
+	return s_shader;
 }
 
 GLuint GLUtils::bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices)
