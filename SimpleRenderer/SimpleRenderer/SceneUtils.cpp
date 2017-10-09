@@ -129,7 +129,7 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 	MovementComponent& movementVars = scene.movementComponents.at(entityID);
 	LogicComponent& logicVars = scene.logicComponents.at(entityID);
 
-	transform = _transform;
+	transform = _transform * glm::scale(glm::mat4{ 1 }, glm::vec3{ radius, height, radius });
 
 	material.shader = GLUtils::getThresholdShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture4.jpg");
