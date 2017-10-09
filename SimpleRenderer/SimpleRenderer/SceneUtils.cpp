@@ -65,8 +65,10 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
+	material.shaderParams.metallicness = 0.1f;
+	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
-	setDefaultWorldMoveInputBindings(input);
+	setDefaultInputBindings(input);
 
 	movementVars.moveSpeed = 0.1f;
 	movementVars.orientationSensitivity = 0.05f;
@@ -94,10 +96,12 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
+	material.shaderParams.metallicness = 0.1f;
+	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	mesh = getSphereMesh();
 
-	setDefaultWorldMoveInputBindings(input);
+	setDefaultInputBindings(input);
 
 	movementVars.moveSpeed = 0.1f;
 	movementVars.orientationSensitivity = 0.05f;
@@ -123,10 +127,12 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/PlaneTexture.jpg");
+	material.shaderParams.metallicness = 0.1f;
+	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	mesh = getCylinderMesh();
 
-	setDefaultWorldMoveInputBindings(input);
+	setDefaultInputBindings(input);
 
 	movementVars.moveSpeed = 0.1f;
 	movementVars.orientationSensitivity = 0.05f;
@@ -164,7 +170,7 @@ size_t SceneUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::v
 	return entityID;
 }
 
-void SceneUtils::setDefaultWorldMoveInputBindings(InputComponent& input)
+void SceneUtils::setDefaultInputBindings(InputComponent& input)
 {
 	input = {};
 	input.leftBtnMap = GLFW_KEY_KP_4;
@@ -178,6 +184,10 @@ void SceneUtils::setDefaultWorldMoveInputBindings(InputComponent& input)
 	input.elevationPosBtnMap = GLFW_KEY_KP_3;
 	input.elevationNegBtnMap = GLFW_KEY_KP_DECIMAL;
 	input.rollBtnMap = GLFW_KEY_KP_0;
+	input.btn1Map = GLFW_KEY_KP_ADD;
+	input.btn2Map = GLFW_KEY_KP_SUBTRACT;
+	input.btn3Map = GLFW_KEY_KP_MULTIPLY;
+	input.btn4Map = GLFW_KEY_KP_DIVIDE;
 }
 
 const std::vector<VertexFormat>& SceneUtils::getSphereVertices()
@@ -264,9 +274,9 @@ const std::vector<GLuint>& SceneUtils::getCylinderIndices()
 		s_indices.reserve(g_kNumVerticesCylinder);
 		for (size_t i = 0; i < 2; ++i) {
 			for (size_t j = 0; j < g_kCylinderThetaSegments + 1; ++j) {
-				GLuint vertIdxTopLeft = i * g_kCylinderThetaSegments + j;
+				GLuint vertIdxTopLeft = static_cast<GLuint>(i * g_kCylinderThetaSegments + j);
 				GLuint vertIdxTopRight = vertIdxTopLeft + 1;
-				GLuint vertIdxBottomLeft = (i + 1) * g_kCylinderThetaSegments + j;
+				GLuint vertIdxBottomLeft = static_cast<GLuint>((i + 1) * g_kCylinderThetaSegments + j);
 				GLuint vertIdxBottomRight = vertIdxBottomLeft + 1;
 				if ((vertIdxTopLeft   < g_kNumVerticesCylinder)  && (vertIdxTopRight    < g_kNumVerticesCylinder)
 				&&  (vertIdxBottomLeft < g_kNumVerticesCylinder) && (vertIdxBottomRight < g_kNumVerticesCylinder)) {

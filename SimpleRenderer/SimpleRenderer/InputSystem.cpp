@@ -94,4 +94,12 @@ void InputSystem::update(size_t entityID)
 		input.orientationDelta.y -= 1;
 	if (input.rollBtnMap && glfwGetKey(m_window, input.rollBtnMap) == GLFW_PRESS)
 		input.orientationDelta.z += 1;
+	if (input.btn1Map)
+		input.btn1Down = glfwGetKey(m_window, input.btn1Map);
+	if (input.btn2Map)
+		input.btn2Down = glfwGetKey(m_window, input.btn2Map);
+	if (input.btn3Map)
+		input.btn3Down = glfwGetKey(m_window, input.btn3Map);
+	if (input.btn4Map)
+		input.btn4Down = glfwGetKey(m_window, input.btn4Map);
 }

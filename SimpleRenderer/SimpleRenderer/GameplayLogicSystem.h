@@ -3,7 +3,7 @@
 #include "KeyObserver.h"
 
 struct Scene;
-struct InputSystem;
+class InputSystem;
 
 class GameplayLogicSystem : IKeyObserver {
 public:

@@ -20,8 +20,10 @@ public:
 private:
 	GLFWwindow* m_glContext;
 	const Scene& m_scene;
-	GLuint m_uniformBuffer;
-	GLuint m_uniformBlockBinding;
+	GLuint m_uboUniforms;
+	GLuint m_uboShaderParams;
+	GLuint m_uniformBindingPoint;
+	GLuint m_shaderParamsBindingPoint;
 	const GLuint m_kUniformModelOffset;
 	const GLuint m_kUniformViewOffset;
 	const GLuint m_kUniformProjectionOffset;

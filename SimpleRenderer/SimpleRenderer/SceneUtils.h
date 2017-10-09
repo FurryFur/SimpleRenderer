@@ -35,7 +35,7 @@ namespace SceneUtils {
 
 	size_t createCamera(Scene&, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up = glm::vec3{ 0, 1, 0 });
 
-	void setDefaultWorldMoveInputBindings(InputComponent& input);
+	void setDefaultInputBindings(InputComponent& input);
 
 	const std::vector<VertexFormat>& getQuadVertices();
 	const std::vector<GLuint>& getQuadIndices();

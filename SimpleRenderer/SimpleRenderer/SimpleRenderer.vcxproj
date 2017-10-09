@@ -163,8 +163,10 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneUtils.h" />
     <ClInclude Include="ShaderHelper.h" />
+    <ClInclude Include="ShaderParams.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="UniformFormat.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexFormat.h" />
   </ItemGroup>
   <ItemGroup>

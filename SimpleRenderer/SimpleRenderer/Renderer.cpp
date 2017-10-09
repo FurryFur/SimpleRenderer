@@ -16,16 +16,21 @@ using glm::vec3;
 RenderSystem::RenderSystem(GLFWwindow* glContext, const Scene& scene)
 	: m_glContext{ glContext }
 	, m_scene{ scene }
-	, m_uniformBlockBinding{ 0 }
+	, m_uniformBindingPoint{ 0 }
+	, m_shaderParamsBindingPoint{ 1 }
 	, m_kUniformModelOffset{ 0 }
 	, m_kUniformViewOffset{ sizeof(mat4) }
 	, m_kUniformProjectionOffset{ sizeof(mat4) * 2 }
 {
-	// Setup 
-	glGenBuffers(1, &m_uniformBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffer);
+	// Create buffer for camera parameters
+	glGenBuffers(1, &m_uboUniforms);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_uniformBindingPoint, m_uboUniforms);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformFormat), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_uniformBlockBinding, m_uniformBuffer);
+
+	// Create buffer for shader parameters
+	glGenBuffers(1, &m_uboShaderParams);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_shaderParamsBindingPoint, m_uboShaderParams);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderParams), nullptr, GL_DYNAMIC_DRAW);
 }
 
 void RenderSystem::beginRender()
@@ -58,6 +63,13 @@ void RenderSystem::update(size_t entityID)
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(glGetUniformLocation(material.shader, "sampler"), 0);
 	glBindTexture(GL_TEXTURE_2D, material.texture);
+
+	// Send shader parameters to gpu
+	GLuint blockIndex;
+	blockIndex = glGetUniformBlockIndex(material.shader, "ShaderParams");
+	glUniformBlockBinding(material.shader, blockIndex, m_shaderParamsBindingPoint);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_shaderParamsBindingPoint, m_uboShaderParams);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ShaderParams), &material.shaderParams);
 		
 	// Get Aspect ratio
 	int width, height;
@@ -69,12 +81,12 @@ void RenderSystem::update(size_t entityID)
 	uniforms.model = transform;
 	uniforms.view = glm::inverse(cameraTransform);
 	uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
+	uniforms.cameraPos = cameraTransform[3];
 
 	// Send the model view and projection matrices to the gpu
-	GLuint blockIndex;
 	blockIndex = glGetUniformBlockIndex(material.shader, "Uniforms");
-	glUniformBlockBinding(material.shader, blockIndex, m_uniformBlockBinding);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffer);
+	glUniformBlockBinding(material.shader, blockIndex, m_uniformBindingPoint);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_uniformBindingPoint, m_uboUniforms);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformFormat), &uniforms);
 
 	// Draw object

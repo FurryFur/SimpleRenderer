@@ -51,7 +51,7 @@ void MovementSystem::update(size_t entityID)
 	// Rotation
 	// Prevent elevation going past 90 degrees
 	glm::mat3 elevationMat{ 1 };
-	float elevation = M_PI / 2 - std::acos(glm::dot(front, up));
+	float elevation = static_cast<float>(M_PI / 2 - std::acos(glm::dot(front, up)));
 	if (std::abs(elevation + deltaElevation) < M_PI / 2)
 		elevationMat = glm::rotate(deltaElevation, right);
 	glm::mat3 azimuthMat = glm::rotate(deltaAzimuth, up);
