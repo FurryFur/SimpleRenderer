@@ -22,7 +22,7 @@
 //GLuint compileFragmentShader(const char* shaderCode);
 //GLuint compileShader(GLenum ShaderType, const char* shaderCode);
 //GLuint linkProgram(GLuint vertexShaderId, GLuint fragmentShaderId);
-//GLint validateProgram(GLuint programObjectId);
+GLint validateProgram(GLuint programObjectId);
 
 // Compile and link the shader programs.
 // vertex_shader is the file path to the vertex_shader code.

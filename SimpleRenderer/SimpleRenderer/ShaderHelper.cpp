@@ -114,7 +114,7 @@ void compileAndLinkShaders(std::string vertex_shader, std::string fragment_shade
 	GLuint vertexShader = compileVertexShader(vertexShaderSource.c_str());
 	GLuint fragmentShader = compileFragmentShader(fragmentShaderSource.c_str());
 	program = linkProgram(vertexShader, fragmentShader);
-	validateProgram(program);
+	//validateProgram(program);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }

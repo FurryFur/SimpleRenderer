@@ -183,6 +183,7 @@ GLuint GLUtils::loadTexture(const std::string& filename)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(textureData);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return texture;
 }
@@ -191,6 +192,7 @@ GLuint GLUtils::loadCubeMap(const std::vector<std::string>& faceFilenames)
 {
 	GLuint cubeMap;
 	glGenTextures(1, &cubeMap);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
 
 	for (GLenum i = 0; i < faceFilenames.size(); ++i) {
@@ -208,6 +210,8 @@ GLuint GLUtils::loadCubeMap(const std::vector<std::string>& faceFilenames)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	return cubeMap;
 }
