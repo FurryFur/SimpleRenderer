@@ -12,6 +12,8 @@
 // Mail         : lance.cha7337@mediadesign.school.nz
 //
 
+#define _USE_MATH_DEFINES
+
 #include "GLUtils.h"
 #include "SceneUtils.h"
 #include "InputSystem.h"
@@ -24,6 +26,8 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
+#include <cmath>
+
 int main()
 {
 	GLFWwindow* window = GLUtils::initOpenGL();
@@ -34,10 +38,25 @@ int main()
 	InputSystem inputSystem(window, scene);
 	GameplayLogicSystem gameplayLogicSystem(scene, inputSystem);
 
+	// Order matters, buttons are assigned to the first four entities created
 	SceneUtils::createSphere(scene, glm::translate({}, glm::vec3{ -1.5f, 1.5f, 0 }));
-	SceneUtils::createQuad(scene, glm::translate({}, glm::vec3{ 1.5f, 1.5f, 0}));
-	SceneUtils::createCylinder(scene, 1.5, 1.5, glm::translate({}, glm::vec3{ -1.5f, -1.5f, 0 }));
+	SceneUtils::createQuad(scene, 
+		  glm::translate({}, glm::vec3{ 1.5f, 1.5f, 0})
+		* glm::rotate(glm::mat4{}, static_cast<float>(-M_PI / 16), glm::vec3{ 1, 0, 0 }));
+	SceneUtils::createCylinder(scene, 1.5, 1.5,
+		  glm::translate(glm::mat4{}, glm::vec3{ -1.5f, -1.5f, 0 })
+		* glm::rotate(glm::mat4{}, static_cast<float>(M_PI / 4), glm::vec3{ 0, 0, 1 }));
 	SceneUtils::createPyramid(scene, glm::translate({}, glm::vec3{ 1.5f, -1.5f, 0 }));
+	
+	//SceneUtils::createCube(scene);
+	SceneUtils::createSkybox(scene, {
+		"Assets/Textures/Skybox/right.jpg",
+		"Assets/Textures/Skybox/left.jpg",
+		"Assets/Textures/Skybox/top.jpg",
+		"Assets/Textures/Skybox/bottom.jpg",
+		"Assets/Textures/Skybox/back.jpg",
+		"Assets/Textures/Skybox/front.jpg",
+	});
 
 	size_t cameraEntity = SceneUtils::createCamera(scene, { 0, 0, 6 }, { 0, 0, 0 }, { 0, 1, 0 });
 	renderSystem.setCamera(cameraEntity);

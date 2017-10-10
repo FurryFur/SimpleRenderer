@@ -90,7 +90,8 @@ void GameplayLogicSystem::keyCallback(int key, int scancode, int action, int mod
 		m_dTheta = -m_dTheta;
 
 	// Skip keys we aren't interested in
-	if (!(key == GLFW_KEY_1 || key == GLFW_KEY_2 || key == GLFW_KEY_3 || key == GLFW_KEY_4))
+	if (!(key == GLFW_KEY_1 || key == GLFW_KEY_2 || key == GLFW_KEY_3 
+	   || key == GLFW_KEY_4)) // || key == GLFW_KEY_5))
 		return;
 
 	// Update the possessed entity state (which entity is currently being controled)
@@ -104,6 +105,8 @@ void GameplayLogicSystem::keyCallback(int key, int scancode, int action, int mod
 		m_possessedEntity = 2;
 	else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
 		m_possessedEntity = 3;
+	/*else if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+		m_possessedEntity = 4;*/
 
 	m_oldPossessedEntityUpdated = false;
 	m_newPossessedEntityUpdated = false;

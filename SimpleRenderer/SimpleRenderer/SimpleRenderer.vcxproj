@@ -185,10 +185,22 @@
   <ItemGroup>
     <None Include="Assets\Shaders\default_frag.glsl" />
     <None Include="Assets\Shaders\default_vert.glsl" />
+    <None Include="Assets\Shaders\skybox_frag.glsl" />
+    <None Include="Assets\Shaders\skybox_vert.glsl" />
     <None Include="Assets\Shaders\threshold_frag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\PlaneTexture.jpg" />
+    <Image Include="Assets\Textures\random-texture.jpg" />
+    <Image Include="Assets\Textures\random-texture2.jpg" />
+    <Image Include="Assets\Textures\random-texture3.png" />
+    <Image Include="Assets\Textures\random-texture4.jpg" />
+    <Image Include="Assets\Textures\Skybox\back.jpg" />
+    <Image Include="Assets\Textures\Skybox\bottom.jpg" />
+    <Image Include="Assets\Textures\Skybox\front.jpg" />
+    <Image Include="Assets\Textures\Skybox\left.jpg" />
+    <Image Include="Assets\Textures\Skybox\right.jpg" />
+    <Image Include="Assets\Textures\Skybox\top.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

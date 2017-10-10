@@ -48,6 +48,7 @@ RenderSystem::RenderSystem(GLFWwindow* glContext, const Scene& scene)
 
 void RenderSystem::beginRender()
 {
+	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -59,7 +60,8 @@ void RenderSystem::endRender()
 void RenderSystem::update(size_t entityID)
 {
 	// Filter renderable entities
-	const size_t kRenderableMask = COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM;
+	const size_t kRenderableMask = COMPONENT_MESH | COMPONENT_MATERIAL;
+	size_t components = m_scene.componentMasks.at(entityID);
 	if ((m_scene.componentMasks.at(entityID) & kRenderableMask) != kRenderableMask)
 		return;
 
@@ -71,11 +73,20 @@ void RenderSystem::update(size_t entityID)
 	// TODO: Add check that camera is a valid camera entity, throw error otherwise
 	const mat4& cameraTransform = m_scene.transformComponents.at(m_cameraEntity);
 
+	if (material.enableDepth) {
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LESS);
+	}
+	else {
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_LEQUAL);
+	}
+
 	// Tell the gpu what material to use
 	glUseProgram(material.shader);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(glGetUniformLocation(material.shader, "sampler"), 0);
-	glBindTexture(GL_TEXTURE_2D, material.texture);
+	glBindTexture(material.textureType, material.texture);
 
 	// Send shader parameters to gpu
 	GLuint blockIndex;
@@ -91,7 +102,8 @@ void RenderSystem::update(size_t entityID)
 
 	// Get model, view and projection matrices
 	UniformFormat uniforms;
-	uniforms.model = transform;
+	bool hasTransform = (components & COMPONENT_TRANSFORM) ==  COMPONENT_TRANSFORM;
+	uniforms.model = hasTransform ? transform : glm::mat4{ 1 };
 	uniforms.view = glm::inverse(cameraTransform);
 	uniforms.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.5f, 100.0f);
 	uniforms.cameraPos = cameraTransform[3];

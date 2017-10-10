@@ -16,7 +16,7 @@ out vec4 outColor;
 uniform sampler2D sampler;
 
 const float PI = 3.1415926535897932384626433832795;
-const vec3 lightDir = vec3(0, 0, 1);
+const vec3 lightDir = vec3(0.5, 1, 1);
 const vec3 LiDirect = vec3(2, 2, 2);
 const vec3 LiAmbient = vec3(0.2, 0.2, 0.2);
 const float kDiffNorm = 1 / PI;

@@ -65,6 +65,8 @@ size_t SceneUtils::createQuad(Scene& scene, const glm::mat4& transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture3.png");
+	material.textureType = GL_TEXTURE_2D;
+	material.enableDepth = true;
 	material.shaderParams.metallicness = 1.0f;
 	material.shaderParams.glossiness = 75.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
@@ -99,6 +101,8 @@ size_t SceneUtils::createSphere(Scene& scene, const glm::mat4& _transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture2.jpg");
+	material.textureType = GL_TEXTURE_2D;
+	material.enableDepth = true;
 	material.shaderParams.metallicness = 0.3f;
 	material.shaderParams.glossiness = 2.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
@@ -133,6 +137,8 @@ size_t SceneUtils::createCylinder(Scene& scene, float radius, float height, cons
 
 	material.shader = GLUtils::getThresholdShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture4.jpg");
+	material.textureType = GL_TEXTURE_2D;
+	material.enableDepth = true;
 	material.shaderParams.metallicness = 0.75f;
 	material.shaderParams.glossiness = 40.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
@@ -167,10 +173,48 @@ size_t SceneUtils::createPyramid(Scene& scene, const glm::mat4& _transform)
 
 	material.shader = GLUtils::getDefaultShader();
 	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture.jpg");
+	material.textureType = GL_TEXTURE_2D;
+	material.enableDepth = true;
 	material.shaderParams.metallicness = 0.95f;
 	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
 
 	mesh = getPyramidMesh();
+
+	setDefaultInputBindings(input);
+
+	movementVars.moveSpeed = 0.1f;
+	movementVars.orientationSensitivity = 0.05f;
+	movementVars.worldSpaceMove = true;
+
+	logicVars.rotationAxis = glm::vec3{ 0, 1, 0 };
+
+	return entityID;
+}
+
+size_t SceneUtils::createCube(Scene& scene, const glm::mat4 & _transform)
+{
+	size_t entityID = createEntity(scene);
+	size_t& componentMask = scene.componentMasks.at(entityID);
+	componentMask |= COMPONENT_MESH | COMPONENT_MATERIAL | COMPONENT_TRANSFORM | COMPONENT_LOGIC;
+
+	// Get references to components
+	glm::mat4& transform = scene.transformComponents.at(entityID);
+	MeshComponent& mesh = scene.meshComponents.at(entityID);
+	MaterialComponent& material = scene.materialComponents.at(entityID);
+	InputComponent& input = scene.inputComponents.at(entityID);
+	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	LogicComponent& logicVars = scene.logicComponents.at(entityID);
+
+	transform = _transform;
+
+	material.shader = GLUtils::getDefaultShader();
+	material.texture = GLUtils::loadTexture("Assets/Textures/random-texture3.png");
+	material.textureType = GL_TEXTURE_2D;
+	material.enableDepth = true;
+	material.shaderParams.metallicness = 0.95f;
+	material.shaderParams.glossiness = 10.0f; // TODO: Fix values getting messed up on the gpu when this is 0 for some reason
+
+	mesh = getCubeMesh();
 
 	setDefaultInputBindings(input);
 
@@ -208,6 +252,29 @@ size_t SceneUtils::createCamera(Scene& scene, const glm::vec3& pos, const glm::v
 	movementVars.worldSpaceMove = false;
 
 	transform = glm::inverse(glm::lookAt(pos, center, up));
+
+	return entityID;
+}
+
+size_t SceneUtils::createSkybox(Scene& scene, const std::vector<std::string>& faceFilenames)
+{
+	size_t entityID = createEntity(scene);
+
+	size_t& componentMask = scene.componentMasks.at(entityID);
+	componentMask = COMPONENT_MATERIAL | COMPONENT_MESH;
+
+	MaterialComponent& material = scene.materialComponents.at(entityID);
+	InputComponent& input = scene.inputComponents.at(entityID);
+	MovementComponent& movementVars = scene.movementComponents.at(entityID);
+	MeshComponent& mesh = scene.meshComponents.at(entityID);
+
+	material = {};
+	material.shader = GLUtils::getSkyboxShader();
+	material.texture = GLUtils::loadCubeMap(faceFilenames);
+	material.textureType = GL_TEXTURE_CUBE_MAP;
+	material.enableDepth = false;
+
+	mesh = getCubeMesh();
 
 	return entityID;
 }
@@ -396,6 +463,94 @@ const std::vector<GLuint>& SceneUtils::getPyramidIndices()
 	return s_indices;
 }
 
+const std::vector<VertexFormat>& SceneUtils::getCubeVertices()
+{
+	static const glm::vec3 topFrontLeft =     { -1,  1,  1 };
+	static const glm::vec3 topFrontRight =    {  1,  1,  1 };
+	static const glm::vec3 topBackLeft =      { -1,  1, -1 };
+	static const glm::vec3 topBackRight =     {  1,  1, -1 };
+	static const glm::vec3 bottomFrontLeft =  { -1, -1,  1 };
+	static const glm::vec3 bottomFrontRight = {  1, -1,  1 };
+	static const glm::vec3 bottomBackLeft =   { -1, -1, -1 };
+	static const glm::vec3 bottomBackRight =  {  1, -1, -1 };
+	static const glm::vec3 topNormal =    {  0,  1,  0 };
+	static const glm::vec3 frontNormal =  {  0,  0,  1 };
+	static const glm::vec3 leftNormal =   { -1,  0,  0 };
+	static const glm::vec3 rightNormal =  {  1,  0,  0 };
+	static const glm::vec3 backNormal =   {  0,  0, -1 };
+	static const glm::vec3 bottomNormal = {  0, -1,  0 };
+	static const std::vector<VertexFormat> s_vertices = {
+		// Top side
+		{ topBackRight,  topNormal, { 1, 1 } },
+		{ topBackLeft,   topNormal, { 0, 1 } },
+		{ topFrontLeft,  topNormal, { 0, 0 } },
+		{ topFrontRight, topNormal, { 1, 0 } },
+
+		// Front side
+		{ topFrontRight,    frontNormal, { 1, 1 } },
+		{ topFrontLeft,     frontNormal, { 0, 1 } },
+		{ bottomFrontLeft,  frontNormal, { 0, 0 } },
+		{ bottomFrontRight, frontNormal, { 1, 0 } },
+
+		// Back side
+		{ topBackLeft,     backNormal, { 1, 1 } },
+		{ topBackRight,    backNormal, { 0, 1 } },
+		{ bottomBackRight, backNormal, { 0, 0 } },
+		{ bottomBackLeft,  backNormal, { 1, 0 } },
+
+		// Left side
+		{ topFrontLeft,    leftNormal, { 1, 1 } },
+		{ topBackLeft,     leftNormal, { 0, 1 } },
+		{ bottomBackLeft,  leftNormal, { 0, 0 } },
+		{ bottomFrontLeft, leftNormal, { 1, 0 } },
+
+		// Right side
+		{ topBackRight,     rightNormal, { 0, 1 } },
+		{ topFrontRight,    rightNormal, { 1, 1 } },
+		{ bottomFrontRight, rightNormal, { 1, 0 } },
+		{ bottomBackRight,  rightNormal, { 0, 0 } },
+
+		// Bottom
+		{ bottomFrontRight, bottomNormal, { 1, 1 } },
+		{ bottomFrontLeft,  bottomNormal, { 0, 1 } },
+		{ bottomBackLeft,   bottomNormal, { 0, 0 } },
+		{ bottomBackRight,  bottomNormal, { 1, 0 } },
+	};
+
+	return s_vertices;
+}
+
+const std::vector<GLuint>& SceneUtils::getCubeIndices()
+{
+	static const std::vector<GLuint> s_indices = {
+		// Top side
+		0, 1, 2,
+		0, 2, 3,
+
+		// Front side
+		4, 5, 6,
+		4, 6, 7,
+
+		// Back side
+		8, 9, 10,
+		8, 10, 11,
+
+		// Left side
+		12, 13, 14,
+		12, 14, 15,
+
+		// Right side
+		16, 17, 18,
+		16, 18, 19,
+
+		// Bottom side
+		20, 21, 22,
+		20, 22, 23
+	};
+
+	return s_indices;
+}
+
 const std::vector<VertexFormat>& SceneUtils::getQuadVertices()
 {
 	static const std::vector<VertexFormat> s_vertices = {
@@ -458,6 +613,18 @@ MeshComponent SceneUtils::getPyramidMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getPyramidVertices();
 	static const std::vector<GLuint>& indices = getPyramidIndices();
+	static const MeshComponent mesh{
+		GLUtils::bufferVertices(vertices, indices),
+		static_cast<GLsizei>(indices.size())
+	};
+
+	return mesh;
+}
+
+MeshComponent SceneUtils::getCubeMesh()
+{
+	static const std::vector<VertexFormat>& vertices = getCubeVertices();
+	static const std::vector<GLuint>& indices = getCubeIndices();
 	static const MeshComponent mesh{
 		GLUtils::bufferVertices(vertices, indices),
 		static_cast<GLsizei>(indices.size())

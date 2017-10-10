@@ -47,10 +47,17 @@ namespace SceneUtils {
 	// Creates a pyramid
 	size_t createPyramid(Scene&, const glm::mat4& transform = glm::mat4{ 1 });
 
+	// Creates a pyramid
+	size_t createCube(Scene&, const glm::mat4& transform = glm::mat4{ 1 });
+
 	// Creates a camera.
 	// This camera needs to be set as active on the render in order to be rendered from.
 	size_t createCamera(Scene&, const glm::vec3& pos, const glm::vec3& center, const glm::vec3& up = glm::vec3{ 0, 1, 0 });
 
+	// Creates a skybox.
+	// Can be used to set the environment map for the renderer.
+	size_t createSkybox(Scene&, const std::vector<std::string>& faceFilenames);
+	
 	// Handles boilerplate input binding
 	void setDefaultInputBindings(InputComponent& input);
 
@@ -94,6 +101,16 @@ namespace SceneUtils {
 	// (only 1 set of indices will be constructed).
 	const std::vector<GLuint>& getPyramidIndices();
 
+	// Returns the vertices to construct a cube.
+	// This function is cached for efficiency 
+	// (only 1 set of vertices will be constructed).
+	const std::vector<VertexFormat>& getCubeVertices();
+
+	// Returns the indices to construct a cube.
+	// This function is cached for efficiency 
+	// (only 1 set of indices will be constructed).
+	const std::vector<GLuint>& getCubeIndices();
+
 	// Returns a Mesh Component containing the VAO for a quad.
 	// This function is cached for efficiency 
 	// (Only 1 mesh will be buffered).
@@ -113,4 +130,9 @@ namespace SceneUtils {
 	// This function is cached for efficiency
 	// (Only 1 mesh will be buffered).
 	MeshComponent getPyramidMesh();
+
+	// Returns a Mesh Component containing the VAO for a cube.
+	// This function is cached for efficiency
+	// (Only 1 mesh will be buffered).
+	MeshComponent getCubeMesh();
 }

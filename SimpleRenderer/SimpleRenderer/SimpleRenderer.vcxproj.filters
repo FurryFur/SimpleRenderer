@@ -25,6 +25,9 @@
     <Filter Include="Assets\Textures">
       <UniqueIdentifier>{9e8c04a3-22a4-4d33-a44f-fd18c664b977}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\Textures\Skybox">
+      <UniqueIdentifier>{1b1c8e24-93a8-4185-9370-3f63dfcfd589}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -130,10 +133,46 @@
     <None Include="Assets\Shaders\threshold_frag.glsl">
       <Filter>Assets\Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\skybox_frag.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\skybox_vert.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\PlaneTexture.jpg">
       <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\random-texture.jpg">
+      <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\random-texture2.jpg">
+      <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\random-texture3.png">
+      <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\random-texture4.jpg">
+      <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\back.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\bottom.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\front.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\left.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\right.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\top.jpg">
+      <Filter>Assets\Textures\Skybox</Filter>
     </Image>
   </ItemGroup>
 </Project>

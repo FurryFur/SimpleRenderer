@@ -21,5 +21,7 @@
 struct MaterialComponent {
 	GLuint shader;
 	GLuint texture;
+	GLenum textureType;
+	bool enableDepth;
 	ShaderParams shaderParams;
 };

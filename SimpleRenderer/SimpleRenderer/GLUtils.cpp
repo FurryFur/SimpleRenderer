@@ -118,6 +118,22 @@ GLuint GLUtils::getThresholdShader()
 	return s_shader;
 }
 
+GLuint GLUtils::getSkyboxShader()
+{
+	static GLuint s_shader;
+	static bool s_shaderBuilt = false;
+
+	if (!s_shaderBuilt) {
+		compileAndLinkShaders(
+			"Assets/Shaders/skybox_vert.glsl",
+			"Assets/Shaders/skybox_frag.glsl",
+			s_shader);
+		s_shaderBuilt = true;
+	}
+
+	return s_shader;
+}
+
 GLuint GLUtils::bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices)
 {
 	GLuint VAO;
@@ -169,4 +185,27 @@ GLuint GLUtils::loadTexture(const std::string& filename)
 	stbi_image_free(textureData);
 
 	return texture;
+}
+
+GLuint GLUtils::loadCubeMap(const std::vector<std::string>& faceFilenames)
+{
+	GLuint cubeMap;
+	glGenTextures(1, &cubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+
+	for (GLenum i = 0; i < faceFilenames.size(); ++i) {
+		int width, height, nrChannels;
+		unsigned char* faceData = stbi_load(faceFilenames.at(i).c_str(), &width, &height, 
+		                                    &nrChannels, 0);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+		             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, faceData);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	return cubeMap;
 }

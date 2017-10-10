@@ -36,6 +36,10 @@ namespace GLUtils {
 	// This function will build the shader if it is not already built.
 	GLuint getThresholdShader();
 
+	// Returns a hander to the skybox shader.
+	// This function will build the sahder if it is not already built.
+	GLuint getSkyboxShader();
+
 	// Buffers vertex and index data to the GPU.
 	// Returns a handler the the VAO associated with the vertices / indices.
 	GLuint bufferVertices(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices);
@@ -43,4 +47,8 @@ namespace GLUtils {
 	// Loads a texture to GPU memory.
 	// Returns a handler to the GPU texture.
 	GLuint loadTexture(const std::string& filename);
+
+	// Loads a cube map to GPU memory.
+	// Returns a handler to the GPU cube map.
+	GLuint loadCubeMap(const std::vector<std::string>& faceFilenames);
 }
