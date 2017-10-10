@@ -37,6 +37,9 @@ public:
 	// Sets the current camera.
 	void setCamera(size_t entityID);
 
+	// Sets the environment map for reflections
+	void setEnvironmentMap(size_t entityID);
+
 private:
 	GLFWwindow* m_glContext;
 	const Scene& m_scene;
@@ -44,8 +47,9 @@ private:
 	GLuint m_uboShaderParams;
 	GLuint m_uniformBindingPoint;
 	GLuint m_shaderParamsBindingPoint;
-	const GLuint m_kUniformModelOffset;
-	const GLuint m_kUniformViewOffset;
-	const GLuint m_kUniformProjectionOffset;
 	size_t m_cameraEntity;
+
+	// Handler to a cube map on the GPU, used for reflections and environmental lighting
+	GLuint m_environmentMap;
+	bool m_isEnvironmentMap;
 };

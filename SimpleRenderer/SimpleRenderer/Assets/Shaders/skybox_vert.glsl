@@ -17,6 +17,6 @@ void main()
 {
 	mat4 view = u.view;
 	view[3] = vec4(0, 0, 0, 1);
-	o.textureDir = vec3(-inPosition.x, inPosition.y, -inPosition.z);
+	o.textureDir = inPosition;
 	gl_Position = (u.projection * view * vec4(inPosition, 1.0)).xyww;
 }

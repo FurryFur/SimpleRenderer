@@ -31,9 +31,6 @@ RenderSystem::RenderSystem(GLFWwindow* glContext, const Scene& scene)
 	, m_scene{ scene }
 	, m_uniformBindingPoint{ 0 }
 	, m_shaderParamsBindingPoint{ 1 }
-	, m_kUniformModelOffset{ 0 }
-	, m_kUniformViewOffset{ sizeof(mat4) }
-	, m_kUniformProjectionOffset{ sizeof(mat4) * 2 }
 {
 	// Create buffer for camera parameters
 	glGenBuffers(1, &m_uboUniforms);
@@ -44,6 +41,8 @@ RenderSystem::RenderSystem(GLFWwindow* glContext, const Scene& scene)
 	glGenBuffers(1, &m_uboShaderParams);
 	glBindBufferBase(GL_UNIFORM_BUFFER, m_shaderParamsBindingPoint, m_uboShaderParams);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderParams), nullptr, GL_DYNAMIC_DRAW);
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 void RenderSystem::beginRender()
@@ -88,6 +87,13 @@ void RenderSystem::update(size_t entityID)
 	glUniform1i(glGetUniformLocation(material.shader, "sampler"), 0);
 	glBindTexture(material.textureType, material.texture);
 
+	// Set environment map to use on GPU
+	if (m_isEnvironmentMap) {
+		glActiveTexture(GL_TEXTURE1);
+		glUniform1i(glGetUniformLocation(material.shader, "environmentSampler"), 1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_environmentMap);
+	}
+
 	// Send shader parameters to gpu
 	GLuint blockIndex;
 	blockIndex = glGetUniformBlockIndex(material.shader, "ShaderParams");
@@ -123,4 +129,11 @@ void RenderSystem::setCamera(size_t entityID)
 {
 	// TODO: Throw error if entity does not have a camera component
 	m_cameraEntity = entityID;
+}
+
+void RenderSystem::setEnvironmentMap(size_t entityID)
+{
+	// TODO: Error if not a cube map
+	m_environmentMap = m_scene.materialComponents.at(entityID).texture;
+	m_isEnvironmentMap = true;
 }

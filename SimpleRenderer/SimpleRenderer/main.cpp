@@ -49,7 +49,7 @@ int main()
 	SceneUtils::createPyramid(scene, glm::translate({}, glm::vec3{ 1.5f, -1.5f, 0 }));
 	
 	//SceneUtils::createCube(scene);
-	SceneUtils::createSkybox(scene, {
+	size_t skybox = SceneUtils::createSkybox(scene, {
 		"Assets/Textures/Skybox/right.jpg",
 		"Assets/Textures/Skybox/left.jpg",
 		"Assets/Textures/Skybox/top.jpg",
@@ -57,6 +57,7 @@ int main()
 		"Assets/Textures/Skybox/back.jpg",
 		"Assets/Textures/Skybox/front.jpg",
 	});
+	renderSystem.setEnvironmentMap(skybox);
 
 	size_t cameraEntity = SceneUtils::createCamera(scene, { 0, 0, 6 }, { 0, 0, 0 }, { 0, 1, 0 });
 	renderSystem.setCamera(cameraEntity);
