@@ -39,25 +39,25 @@ void main(void)
 	float ndoth = clamp(dot(normal, halfVector), 0, 1);
 
 	// Reflection variables
-	vec3 LiReflDir = reflect(-viewDir, normal);
-	vec3 LiReflHalfVec = normalize(normalize(LiReflDir) + viewDir);
-	float ndotRl = clamp(dot(normalize(LiReflDir), normal), 0, 1);
-	float ndotRh = clamp(dot(normal, LiReflHalfVec), 0, 1);
+	// vec3 LiReflDir = reflect(-viewDir, normal);
+	// float ndotRl = clamp(dot(normalize(LiReflDir), normal), 0, 1);
+	// vec3 LiReflHalfVec = normalize(normalize(LiReflDir) + viewDir);
+	// float ndotRh = clamp(dot(normal, LiReflHalfVec), 0, 1);
 	
-	vec3 LiRefl = texture(environmentSampler, LiReflDir).rgb;
+	//vec3 LiRefl = texture(environmentSampler, LiReflDir).rgb;
 	
 	float specPow = p.glossiness;
 	float specNorm = (specPow + 4) * (specPow + 2) / (8 * PI * (specPow + pow(2, -specPow / 2)));
-	vec3 BRDFdiff = kDiffNorm * color;
-	vec3 BRDFspec = specNorm * color * pow(ndoth, specPow);
-	vec3 BRDFrefl = specNorm * color * pow(ndotRh, specPow);
+	vec3 BRDFdiff = (1 - p.metallicness) * kDiffNorm * color;
+	vec3 BRDFspec = p.metallicness * specNorm * color * pow(ndoth, specPow);
+	// vec3 BRDFrefl = p.metallicness * specNorm * color; // n dot hrefl is always 1
+	vec3 BRDFdirect = BRDFdiff + BRDFspec;
 
-	vec3 BRDFdirect = mix(BRDFdiff, BRDFspec, p.metallicness);
-	vec3 LrRefl = p.metallicness * LiRefl * BRDFrefl * ndotRl;
+	//vec3 LrRefl = LiRefl * BRDFrefl * ndotRl;
 	vec3 LrDirect = LiDirect * BRDFdirect * ndotl;
 	vec3 LrAmbient = color * LiAmbient;
 
-	outColor = vec4(LrAmbient + LrDirect + LrRefl, 1);
+	outColor = vec4(LrDirect + LrAmbient, 1);
 
 	if (outColor.r < 0.1f)
 		discard;
